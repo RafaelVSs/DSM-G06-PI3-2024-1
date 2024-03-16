@@ -1,0 +1,100 @@
+:root {
+  /*Variáveis - Paleta de Cores*/
+  --cor1: #0086ff; /*AZUL PRINCIPAL*/
+  --cor2: #58c22e; /*VERDE*/
+  --cor3: #8c8c8c; /*CINZA*/
+  --cor4: #e8f0fe; /*GELO*/
+  --cor5: #ffffff; /*BRANCO*/
+
+  /*Variáveis = Fontes do Site*/
+  --fonte-padrao: Arial, Verdana, Helvetica, Sans-serif;
+  --fonte-destaque: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+body {
+  background-color: var(--cor1);
+}
+
+.App {
+  text-align: center;
+  margin: 0, 20%, 20%, 0;
+}
+
+#logo_login {
+  margin: 1em;
+  max-width: 250px;
+}
+
+.title1 {
+  color: var(--cor4);
+  font-size: 4em;
+  margin: 5px;
+  font-family: var(--fonte-destaque);
+  font-weight: lighter;
+}
+
+.title2 {
+  color: var(--cor4);
+  font-size: 1em;
+  font-family: var(--fonte-padrao);
+  font-weight: lighter;
+  margin: 3em;
+  margin-bottom: 0.7em;
+}
+
+#input_login {
+  font-size: 1.2rem;
+  margin: 0.7rem auto;
+  padding: 1rem 2rem;
+  border-radius: 0.7rem;
+  background-color: var(--cor5);
+  border: none;
+  width: 15%;
+  display: block;
+  border-bottom: 0.3rem solid transparent;
+  transition: all 0.3s;
+}
+
+#input_password {
+  font-size: 1.2rem;
+  margin: auto;
+  padding: 1rem 2rem;
+  border-radius: 0.7rem;
+  background-color: var(--cor5);
+  border: none;
+  width: 15%;
+  display: block;
+  border-bottom: 0.3rem solid transparent;
+  transition: all 0.3s;
+}
+
+.button1 {
+  background-color: var(--cor2);
+  border: none;
+  color: var(--cor5);
+  border-radius: 6px;
+  font-size: 2em;
+  font-weight: lighter;
+  font-family: var(--fonte-padrao);
+  padding: 10px 80px;
+  text-align: center;
+  margin: 0.45em;
+  cursor: pointer;
+  min-height: 30px;
+  min-width: 120px;
+}
+
+.button1:hover {
+  background-color: #55ad33;
+  color: var(--cor5);
+  transition: 0.3s;
+  border-radius: 6px;
+  font-family: var(--fonte-padrao);
+  min-height: 30px;
+  min-width: 120px;
+  padding: 10px 80px;
+  text-align: center;
+  margin: 0.45em;
+  cursor: pointer;
+}
