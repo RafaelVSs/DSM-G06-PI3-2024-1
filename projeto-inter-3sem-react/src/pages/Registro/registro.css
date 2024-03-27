@@ -82,12 +82,12 @@
   .dropdownUP-content {
     display: none;
     position: absolute;
-    justify-content: space-between;
+    justify-content: center;
     background-color: #f9f9f9;
-    min-width: 160px;
-    height: 150px;
+    min-width: 150px;
+    height: 190px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    padding: 10px 10px;
+    padding: 25px 10px;
     z-index: 1;
     bottom: 100%; /* PARA APARECER PARA CIMA */
   }
@@ -98,21 +98,28 @@
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   }
   
-  .dropdownUP-button {
-    background-color: var(--cor2);
-    text-decoration: none;
-    border: none;
-    color: var(--cor5);
-    border-radius: 6px;
-    font-size: 1em;
-    font-weight: lighter;
-    padding: 5px 10px;
-    text-align: center;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    cursor: pointer;
-    min-height: 30px;
-    min-width: 120px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  }
+  .dropdownUP-button,
+.dropdownUP-button:visited,
+.dropdownUP-button:hover,
+.dropdownUP-button:active {
+  /* Estilos para tornar os links parecidos com botões */
+  display: inline-block;
+  padding: 8px 8px;
+  background-color: var(--cor2);
+  color: var(--cor5);
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  margin: 5px 0;
+  cursor: pointer;
+  min-height: 30px;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.dropdownUP-button:hover {
+  /* Estilo de hover */
+  background-color: var(--cor3);
+}
+
   
