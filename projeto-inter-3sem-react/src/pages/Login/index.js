@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios"; // para fazer requisições HTTP
 import "./login.css";
+import robo from "./logo_RobAt_Bco.png";
 
 function Login() {
   const [matricula, setMatricula] = useState("");
@@ -20,11 +21,7 @@ function Login() {
 
   return (
     <div className="App">
-      <img
-        id="logo_login"
-        src="../../img/logo_RobAt_Bco.png"
-        alt="Logo do App"
-      />
+      <img className='logo_login' src={robo} alt='logo Robotic' />
       {/* <h1 className='title1' >ACESSO</h1> */}
       <h2 className="title2">Faça login para continuar</h2>
       {error && <p>{error}</p>}

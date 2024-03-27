@@ -9,6 +9,7 @@ const TicketBar = ({ ticket }) => {
       <p>Setor: {ticket.setor}</p>
       <p>Sala: {ticket.sala}</p>
       <p>Tipo de Problema: {ticket.tipoProblema}</p>
+      <p>Registrado em: {new Date(ticket.registradoEm).toLocaleTimeString()}</p>
 
       <div className="dropdown">
         <p className="status">Status: {ticket.status} </p>

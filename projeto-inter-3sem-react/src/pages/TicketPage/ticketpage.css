@@ -40,6 +40,7 @@
   }
   
   .ticket-bar p {
+    font-size: 0.9rem;
     margin: 5px 0;
     display: inline-block;
   }

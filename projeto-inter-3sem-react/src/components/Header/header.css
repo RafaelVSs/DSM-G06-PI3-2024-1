@@ -8,14 +8,14 @@ header {
     margin-bottom: 10px;
 }
 
-.cotainer1 {
+.container1 {
     justify-content: left;
 }
 
 .logoHeader {
     margin: 3px;
-    max-width: 60px;
-    height: 60px;
+    max-width: 35px;
+    height: 35px;
 }
 
 .roboticHeader {

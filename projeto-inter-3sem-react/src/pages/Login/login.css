@@ -21,7 +21,7 @@ body {
   margin: 0, 20%, 20%, 0;
 }
 
-#logo_login {
+.logo_login {
   margin: 1em;
   max-width: 250px;
 }
@@ -129,6 +129,7 @@ body {
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   padding: 12px 16px;
   z-index: 1;
+  font-size: 0.8em;
 }
 
 .dropdown span:hover .dropdown-content {
