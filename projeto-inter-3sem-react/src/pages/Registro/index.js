@@ -37,7 +37,7 @@ const RegistrationPage = ({ selectedBlock, selectedRoom }) => {
   return (
     <div>
       <h2 className='title1Registro'>{`Setor: ${selectedBlock}, Sala: ${selectedRoom}`}</h2>
-      <p className='data_hora'>{dateTime.toLocaleString()}</p>
+      
       <label className='title2Registro' htmlFor="select-value">Tipo do problema: </label> 
       <select
         id="select-value"
@@ -59,8 +59,22 @@ const RegistrationPage = ({ selectedBlock, selectedRoom }) => {
         onChange={(e) => setDescription(e.target.value)}
       />
       <br /><br />
+      <div className="setor_aberturaNovo">
+        <p className="data_hora2" >{dateTime.toLocaleString()}</p>
+
+        <div className="dropdownUP">
+        <Link className="button2" onClick={handleSubmit} to="/salas">Registrar</Link>
+        <div class="dropdownUP-content">
+          <Link className="dropdownUP-button" to="/tickets">Aberto</Link>
+          <br />
+          <Link className="dropdownUP-button" to="/tickets">Pendente</Link>
+          <br />
+          <Link className="dropdownUP-button" to="/tickets">Finalizado</Link>
+        </div>
+      </div>
+      </div>
       {/* <button onClick={handleSubmit}>Enviar</button> */}
-      <Link className='button1' onClick={handleSubmit} to='/'>Registrar Ticket</Link>
+      {/* <Link className='button1' onClick={handleSubmit} to='/'>Registrar Ticket</Link> */}
     </div>
   );
 };

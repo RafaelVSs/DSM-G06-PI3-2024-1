@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./ticketpage.css";
+import { Link } from "react-router-dom";
 
 // Componente para representar um ticket
 const TicketBar = ({ ticket }) => {
@@ -15,7 +16,8 @@ const TicketBar = ({ ticket }) => {
         <p className="status">Status: {ticket.status} </p>
         <p>&#160; &#9998; </p>
         <div class="dropdown-content">
-          <button className="dropdown-button">Editar</button><br/>
+          <button className="dropdown-button">Editar</button>
+          <br />
           <button className="dropdown-button">Finalizar</button>
         </div>
       </div>
@@ -26,6 +28,7 @@ const TicketBar = ({ ticket }) => {
 // Componente para a página de visualização de tickets
 const TicketPage = () => {
   const [tickets, setTickets] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Simulação de obtenção de tickets do banco de dados
   useEffect(() => {
@@ -55,6 +58,14 @@ const TicketPage = () => {
       },
     ];
     setTickets(fetchedTickets);
+
+    // Atualizar a hora atual a cada segundo
+    const intervalID = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    // Limpar o intervalo quando o componente for desmontado
+    return () => clearInterval(intervalID);
   }, []);
 
   return (
@@ -64,6 +75,10 @@ const TicketPage = () => {
         {tickets.map((ticket, index) => (
           <TicketBar key={index} ticket={ticket} />
         ))}
+      </div>
+      <div className="setor_aberturaNovo">
+        <p className="data_hora2" >{currentTime.toLocaleString()}</p>
+        <Link className="button2" to="/salas">Novo Ticket</Link>
       </div>
     </div>
   );

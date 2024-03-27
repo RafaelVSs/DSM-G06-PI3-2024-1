@@ -14,8 +14,7 @@ function RoutesApp() {
         <BrowserRouter>
             <Routes>
                 {/* Rota para a página de login */}
-                <Route path="/" element={<>
-                    
+                <Route path="/" element={<>                  
                     <Login />
                 </>} />
     
