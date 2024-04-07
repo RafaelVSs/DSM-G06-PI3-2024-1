@@ -1,0 +1,125 @@
+:root {
+    /*Variáveis - Paleta de Cores*/
+    --cor1: #0086ff; /*AZUL PRINCIPAL*/
+    --cor2: #58c22e; /*VERDE*/
+    --cor3: #8c8c8c; /*CINZA*/
+    --cor4: #e8f0fe; /*GELO*/
+    --cor5: #ffffff; /*BRANCO*/
+  
+    /*Variáveis = Fontes do Site*/
+    --fonte-padrao: Arial, Verdana, Helvetica, Sans-serif;
+    --fonte-destaque: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  }
+  
+  body {
+    background-color: var(--cor1);
+    text-align: center;
+    margin: 0, 20%, 20%, 0;
+  }
+
+  .title1Registro {
+    color: var(--cor4);
+    font-size: 2em;
+    margin: 15px auto 50px auto;
+    font-family: var(--fonte-destaque);
+    font-weight: lighter;
+  }
+
+  .data_hora {
+    color: white;
+    font-size: 2em;
+    margin: 15px auto 50px auto;
+    font-family: var(--fonte-destaque);
+    font-weight: lighter;
+    
+  }
+
+  .title2Registro {
+    color: var(--cor4);
+    font-size: 1.3rem;
+    margin: 15px auto 50px auto;
+    font-family: var(--fonte-destaque);
+    font-weight: lighter;
+  }
+
+  .title3Registro {
+    color: var(--cor4);
+    font-size: 1.3rem;
+    font-family: var(--fonte-destaque);
+    font-weight: lighter;
+  }
+  
+  #select-value {
+    font-size: 0.8rem;
+    margin: auto;
+    margin-left: 20px;
+    margin-bottom: 60px;
+    padding: 1rem 2rem;
+    border-radius: 0.7rem;
+    background-color: var(--cor5);
+    border: none;
+    width: 15%;
+    /* display: block; */
+    border-bottom: 0.3rem solid transparent;
+    transition: all 0.3s;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  }
+
+  #description {
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-bottom: 20px;
+    border-radius: 6px;
+    font-size: 1.2em;
+    text-align: justify;
+  }
+
+  .dropdownUP {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdownUP-content {
+    display: none;
+    position: absolute;
+    justify-content: center;
+    background-color: #f9f9f9;
+    min-width: 150px;
+    height: 190px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    padding: 25px 10px;
+    z-index: 1;
+    bottom: 100%; /* PARA APARECER PARA CIMA */
+  }
+  
+  .dropdownUP:hover .dropdownUP-content {
+    display: block;
+    border-radius: 6px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  }
+  
+  .dropdownUP-button,
+.dropdownUP-button:visited,
+.dropdownUP-button:hover,
+.dropdownUP-button:active {
+  /* Estilos para tornar os links parecidos com botões */
+  display: inline-block;
+  padding: 8px 8px;
+  background-color: var(--cor2);
+  color: var(--cor5);
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  margin: 5px 0;
+  cursor: pointer;
+  min-height: 30px;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.dropdownUP-button:hover {
+  /* Estilo de hover */
+  background-color: var(--cor3);
+}
+
+  

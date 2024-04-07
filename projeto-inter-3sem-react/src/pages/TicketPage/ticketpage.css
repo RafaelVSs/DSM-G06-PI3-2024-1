@@ -1,0 +1,136 @@
+:root {
+  /*Variáveis - Paleta de Cores*/
+  --cor1: #0086ff; /*AZUL PRINCIPAL*/
+  --cor2: #58c22e; /*VERDE*/
+  --cor3: #8c8c8c; /*CINZA*/
+  --cor4: #e8f0fe; /*GELO*/
+  --cor5: #ffffff; /*BRANCO*/
+
+  /*Variáveis = Fontes do Site*/
+  --fonte-padrao: Arial, Verdana, Helvetica, Sans-serif;
+  --fonte-destaque: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+}
+
+/* Estilos para a página de visualização de tickets */
+
+.ticket-container {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.ticket-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ticket-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 90%;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-bar p {
+  font-size: 0.9rem;
+  margin: 5px 0;
+  display: inline-block;
+}
+
+.ticket-bar p:first-child {
+  font-weight: bold;
+}
+
+/* Estilos adicionais */
+body {
+  font-family: Arial, sans-serif;
+  background-color: var(--cor1);
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: black;
+  margin-bottom: 30px;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 12px 16px;
+  z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  border-radius: 6px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-button {
+  background-color: var(--cor2);
+  text-decoration: none;
+  border: none;
+  color: var(--cor5);
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: lighter;
+  font-family: var(--fonte-padrao);
+  padding: 5px 10px;
+  text-align: center;
+  margin: 0.45em;
+  cursor: pointer;
+  min-height: 30px;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
+
+.setor_aberturaNovo {
+  position: fixed;
+  bottom: 18px;
+  right: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+.setor_aberturaNovo p {
+  margin: 0; /* Remova as margens para evitar espaçamento adicional */
+  margin-right: 15px;
+  margin-left: 74.5%;
+  color: white;
+  font-size: 1em;
+}
+
+.button2 {
+  background-color: var(--cor2);
+  text-decoration: none;
+  border: none;
+  color: var(--cor5);
+  border-radius: 6px;
+  font-size: 1em;
+  font-weight: lighter;
+  font-family: var(--fonte-padrao);
+  padding: 10px 20px;
+  cursor: pointer;
+  min-height: 30px;
+  min-width: 80px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+}
