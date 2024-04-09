@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios"; // para fazer requisições HTTP
 import "./login.css";
 import robo from "./logo_RobAt_Bco.png";
+import { Link } from "react-router-dom";
 
 function Login() {
   const [matricula, setMatricula] = useState("");
@@ -60,9 +61,7 @@ function Login() {
           </div>
         </div>
         <br />
-        <button className="button1" type="submit">
-          Login
-        </button>
+        <Link className="button1" to="/tickets">Login</Link>
       </form>
     </div>
   );
