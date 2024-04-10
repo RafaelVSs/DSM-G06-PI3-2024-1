@@ -1,0 +1,52 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# Frontend
+Client/projeto-inter-3sem-react/node_modules
+Client/projeto-inter-3sem-react/package-lock.json
+Client/projeto-inter-3sem-react/package.json
+
+# Backend
+Server/robotic/node_modules
+Server/robotic/package-lock.json
+Server/robotic/package.json
+
+# Miscellaneous
+.DS_Store
+*.env  # This line ignores all .env files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# IDE configurations
+.idea/
+.vscode/
+
+# Editor temporary files
+*.tmp
+
+# Log files
+*.log
+
+# Minified files
+*.min.js
+*.min.css
+
+# Source map files
+*.map
+
+# Testing files
+**/__tests__/**
+**/tests/**
+
+# ESLint cache
+.eslintcache
