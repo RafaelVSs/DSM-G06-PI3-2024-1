@@ -1,0 +1,17 @@
+[
+  {
+    "_id": {
+    "tipobo": "Rede"
+    }
+  },
+  {
+    "_id": {
+    "tipobo": "Sistêmico"
+    }
+  },
+  {
+    "_id": {
+    "tipobo": "Fisico"
+    }
+  }
+]

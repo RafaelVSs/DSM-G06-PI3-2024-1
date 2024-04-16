@@ -1,0 +1,23 @@
+[
+  {
+    "_id": {
+      "nome": "Rafael",
+      "local": "FRANCA",
+      "senha": "123456"
+    }
+  },
+  {
+    "_id": {
+      "nome": "Dimerson",
+      "local": "FRANCA",
+      "senha": "123456"
+    }
+  },
+  {
+    "_id": {
+      "nome": "Eduardo",
+      "local": "FRANCA",
+      "senha": "123456"
+    }
+  }
+]
