@@ -15,7 +15,7 @@ function Header() {
       <div className="container2">
         {/* Aqui precisa puxar o nome do funcionário pelo banco e matrícula e cidade(unidade)*/}
         <h3 className="welcomeHeader">
-          | 18123 | Magalu Franca HB | Bem vindo, Rafael Veríssimo.
+          Magalu Franca HB | Bem vindo, Rafael Veríssimo.
         </h3>
       </div>
 
