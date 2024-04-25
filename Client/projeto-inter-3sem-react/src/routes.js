@@ -8,6 +8,7 @@ import Registro from './pages/Registro'; // Importar componente para página de 
 import TicketPage from './pages/TicketPage'; // Importar componente para página de tickets
 
 import Header from './components/Header'; // Importar componente de cabeçalho
+import  Footer from './components/Footer'; // Importar Footer
 
 function RoutesApp() {
     return (
@@ -16,29 +17,34 @@ function RoutesApp() {
                 {/* Rota para a página de login */}
                 <Route path="/" element={<>                  
                     <Login />
+                    <Footer />
                 </>} />
     
                 {/* Rota para a página de salas */}
                 <Route path="/salas" element={<>
                     <Header />
+                    <Footer />
                     <Salas />
                 </>} />
     
                 {/* Rota para a página de registro */}
                 <Route path="/registro" element={<>
                     <Header />
+                    <Footer />
                     <Registro />
                 </>} />
     
                 {/* Rota para a página de tickets */}
                 <Route path="/tickets" element={<>
                     <Header />
+                    <Footer />
                     <TicketPage />
                 </>} />
     
                 {/* Rota para a página de erro */}
                 <Route path="*" element={<>
                     <Header />
+                    <Footer />
                     <Error />
                 </>} />
             </Routes>

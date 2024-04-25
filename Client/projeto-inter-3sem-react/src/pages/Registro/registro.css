@@ -50,7 +50,7 @@
     font-weight: lighter;
   }
   
-  #select-value {
+  .select-value {
     font-size: 0.8rem;
     margin: auto;
     margin-left: 20px;
