@@ -21,7 +21,7 @@ Server/robotic/package.json
 
 # Miscellaneous
 .DS_Store
-*.env  # This line ignores all .env files
+Server/robotic/.env
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -1,3 +1,6 @@
+import dotenv from 'dotenv'
+dotenv.config()
+
 import express, { json, urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
@@ -6,6 +9,9 @@ import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 
 const app = express();
+
+import mongoose from 'mongoose'
+mongoose.connect(process.env.DATABASE_URL)
 
 app.use(logger("dev"));
 app.use(json());
