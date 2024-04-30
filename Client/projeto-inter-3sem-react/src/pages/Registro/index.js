@@ -43,7 +43,7 @@ const RegistrationPage = ({ selectedBlock, selectedRoom }) => {
       <br />
 
       <label className="title2Registro" htmlFor="select-value">
-        Tipo do problema:{" "}
+        Categoria:{" "}
       </label>
       <select
         className="select-value"

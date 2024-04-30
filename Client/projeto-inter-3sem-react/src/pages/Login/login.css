@@ -16,7 +16,7 @@ body {
   background-color: var(--cor1);
 }
 
-.App_login {
+.App_login { /*AJUSTE DA IMAGEM DE FUNDO*/
   height: 100vh; /* 100% da altura da viewport */
   display: flex;
   justify-content: center;
@@ -25,25 +25,20 @@ body {
   background-size: cover; /* Para garantir que a imagem cubra todo o elemento */
 }
 
-.login_content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
 
 .login_card {
   background-color: #1f23a4d0;
-  border-radius: 20px;
+  border-radius: 0.7rem;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   padding: 20px;
-  width: 500px;
+  width: 35%;
   height: 85%;
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin-top: 50px auto;
   display: flex; /* Adicionado para alinhar itens verticalmente */
   flex-direction: column; /* Itens empilhados verticalmente */
   text-align: center; /* centralizar texto */
+  justify-content: center;
+  align-items: center;
 }
 
 
@@ -103,7 +98,7 @@ body {
 
 .alert-info {
   cursor: auto;
-  font-size: 1.3rem; 
+  font-size: 1.2rem; 
   margin-left: 5px; 
   display: inline-block; /* Alterado para inline-block para aparecer ao lado do input */
   vertical-align: middle; /* Alinhar verticalmente com o input */
@@ -118,30 +113,19 @@ body {
   color: var(--cor5);
   text-decoration: none;
   border: none;
-  border-radius: 6px;
-  font-size: 2em;
+  border-radius: 0.7rem;
+  font-size: 1.2em;
   font-weight: lighter;
-  padding: 10px 80px;
+  padding: 4% 10%;
   text-align: center;
-  margin: 0.45em;
+  margin: 0.3em;
   cursor: pointer;
-  min-height: 30px;
-  min-width: 120px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
 
 .button1:hover {
-  background-color: #55ad33;
-  color: var(--cor5);
+  background-color: #3e8721;
   transition: 0.3s;
-  border-radius: 6px;
-  font-family: var(--fonte-padrao);
-  min-height: 30px;
-  min-width: 120px;
-  padding: 10px 80px;
-  text-align: center;
-  margin: 0.45em;
-  cursor: pointer;
 }
 
 .dropdown {

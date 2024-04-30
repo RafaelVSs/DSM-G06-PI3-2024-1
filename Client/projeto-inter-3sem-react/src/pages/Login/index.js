@@ -22,7 +22,7 @@ function Login() {
 
   return (
     <div className="App_login">
-      <div className="login_content login_card">
+      <div className="login_card">
         <img className='logo_login' src={robo} alt='logo Robotic' />
         {/* <h1 className='title1' >ACESSO</h1> */}
         <h2 className="title2">Faça login para continuar</h2>
@@ -57,7 +57,7 @@ function Login() {
             <div className="dropdown">
               <span className="alert-info">&#128712;</span>
               <div class="dropdown-content">
-                <p>Inserir sua Senha</p>
+                <p>Inserir sua senha</p>
               </div>
             </div>
           </div>
