@@ -1,16 +1,16 @@
 [
   {
-    "_id": {
+    "_id": "ObjectId" {
     "tipobo": "Rede"
     }
   },
   {
-    "_id": {
+    "_id": "ObjectId" {
     "tipobo": "Sistêmico"
     }
   },
   {
-    "_id": {
+    "_id": "ObjectId" {
     "tipobo": "Fisico"
     }
   }
