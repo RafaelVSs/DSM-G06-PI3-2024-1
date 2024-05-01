@@ -76,6 +76,18 @@
     height: 30vh;
   }
 
+  textarea {
+    width: 50%;
+    height: 150px;
+    padding: 12px 20px;
+    margin: 20px 20% 20px 20%;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    resize: none;
+  }
+
   .dropdownUP {
     position: relative;
     display: inline-block;

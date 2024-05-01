@@ -75,7 +75,7 @@ const RoomSelectionPage = () => {
 
       <br/>
           {/* <button className='button1' type="submit">Seguir</button> */}
-          <Link className='button1' to='/registro'>Seguir</Link>
+          <Link className='button1salas' to='/registro'>Seguir</Link>
     </div>
   );
 };
