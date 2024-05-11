@@ -1,17 +1,14 @@
 [
   {
-    "_id": "ObjectId" {
-    "tipobo": "Rede"
-    }
+    "_id": "ObjectId", 
+    "tipoProblema": "Rede"
   },
   {
-    "_id": "ObjectId" {
-    "tipobo": "Sistêmico"
-    }
+    "_id": "ObjectId",
+    "tipoProblema": "Sistêmico"
   },
   {
-    "_id": "ObjectId" {
-    "tipobo": "Fisico"
-    }
+    "_id": "ObjectId",
+    "tipoProblema": "Fisico"
   }
 ]
