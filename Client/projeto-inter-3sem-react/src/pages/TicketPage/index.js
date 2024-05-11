@@ -71,6 +71,10 @@ const TicketPage = () => {
   return (
     <div className="ticket-container">
       <h1>Tickets</h1>
+      <div className="header-ticket">
+        <p>ID, Setor, Sala, Tipo Problema, Registrado, Status</p>
+        {/* Não terminei, mexendo parei aqui !!!! */}
+      </div>
       <div className="ticket-list">
         {tickets.map((ticket, index) => (
           <TicketBar key={index} ticket={ticket} />
@@ -81,7 +85,7 @@ const TicketPage = () => {
         <Link className="button2" to="/salas">Novo Ticket</Link>
       </div>
     </div>
-  );
+);
 };
 
 export default TicketPage;
