@@ -3,17 +3,24 @@ import "./ticketpage.css";
 import { Link } from "react-router-dom";
 
 // Componente para representar um ticket
+// ticket-bar
+// ID do ticket: ticket.id
+// Setor: ticket.setor
+// Sala: ticket.sala
+// Tipo de Problema: ticket.tipoProblema
+// Registrado:  ticket.registradoEm
+// Status: ticket.status
 const TicketBar = ({ ticket }) => {
   return (
     <div className="ticket-bar">
-      <p>ID do Ticket: {ticket.id}</p>
-      <p>Setor: {ticket.setor}</p>
-      <p>Sala: {ticket.sala}</p>
-      <p>Tipo de Problema: {ticket.tipoProblema}</p>
-      <p>Registrado em: {new Date(ticket.registradoEm).toLocaleTimeString()}</p>
+      <p>{ticket.id}</p>
+      <p>{ticket.setor}</p>
+      <p>{ticket.sala}</p>
+      <p>{ticket.tipoProblema}</p>
+      <p>{new Date(ticket.registradoEm).toLocaleTimeString()}</p> 
 
       <div className="dropdown">
-        <p className="status">Status: {ticket.status} </p>
+        <p className="status">{ticket.status} </p>
         <p>&#160; &#9998; </p>
         <div class="dropdown-content">
           <button className="dropdown-button">Editar</button>
