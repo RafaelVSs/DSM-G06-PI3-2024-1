@@ -78,11 +78,15 @@ const TicketPage = () => {
   return (
     <div className="ticket-container">
       <h1>Tickets</h1>
-      <div className="header-ticket">
-        <p>ID, Setor, Sala, Tipo Problema, Registrado, Status</p>
-        {/* Não terminei, mexendo parei aqui !!!! */}
-      </div>
       <div className="ticket-list">
+        <div className="header-ticket"> 
+          <p>ID</p>
+          <p>Setor</p>
+          <p>Sala</p>
+          <p>Tipo Problema</p>
+          <p>Registrado</p>
+          <p>Status</p>
+        </div>
         {tickets.map((ticket, index) => (
           <TicketBar key={index} ticket={ticket} />
         ))}
