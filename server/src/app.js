@@ -5,8 +5,6 @@ import express, { json, urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 
-import indexRouter from "./routes/index.js";
-import usersRouter from "./routes/users.js";
 
 const app = express();
 
@@ -18,7 +16,18 @@ app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
+import ticketRouter from "./routes/ticket.js";
+app.use("/ticket", ticketRouter);
+
+import analistaRouter from "./routes/analista.js";
+app.use("/analista", analistaRouter);
+
+import categoriaRouter from "./routes/categoria.js";
+app.use("/categoria", categoriaRouter);
+
+import salaRouter from "./routes/sala.js";
+app.use("/sala", salaRouter);
+
+
 
 export default app;

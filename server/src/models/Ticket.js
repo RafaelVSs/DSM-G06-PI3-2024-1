@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
 
 const esquema = new mongoose.Schema({
-    nomeSala : {type: String, required: true},
-    analista : {type: String, required: true},
+    nomeSala : {type: mongoose.ObjectId, ref: 'Sala', required: true},
+    analista : {type: mongoose.ObjectId, ref: 'Analista', required: true},
     solicitante : {type: String, required: false},
     descrição : {type: String, required: true},
     data : {type: Date, required: true},
     status : {type: String, required: true},
-    tipoProblema : {type: String, required: true},
+    tipoProblema : {type: mongoose.ObjectId, ref: 'Categoria', required: true},
 })
 
 export default mongoose.model('Ticket', esquema, 'tickets')

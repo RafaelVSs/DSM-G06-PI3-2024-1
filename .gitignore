@@ -10,18 +10,15 @@
 /build
 
 # Frontend
-Client/projeto-inter-3sem-react/node_modules
-Client/projeto-inter-3sem-react/package-lock.json
-Client/projeto-inter-3sem-react/package.json
+client/node_modules
 
 # Backend
-Server/robotic/node_modules
-Server/robotic/package-lock.json
-Server/robotic/package.json
+server/node_modules
+
 
 # Miscellaneous
 .DS_Store
-Server/robotic/.env
+server/.env
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
