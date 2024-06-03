@@ -16,7 +16,7 @@
 
 .ticket-container {
   text-align: center;
-  margin-top: 50px;
+  margin-top: 20px;
 }
 
 .ticket-list {
@@ -42,7 +42,7 @@
 
 .ticket-bar p {
   font-size: 0.9rem;
-  margin: 5px 0;
+  margin: 2px 0;
   display: inline-block;
 }
 
@@ -134,3 +134,20 @@ h1 {
   min-width: 80px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
 }
+.header-ticket{ /*Cabeçalho dos ticket */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f4f4f44c;
+  border: 2px solid #f4f4f44c;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;  
+  width: 90%;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 1.0rem;
+  margin: 5px 0;
+  font-weight: bold;
+}
+ 
