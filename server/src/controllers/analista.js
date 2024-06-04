@@ -14,18 +14,21 @@ controller.create = async function(req, res) {
     }
 };   
 
-controller.retrieveOneId = async function(req, res) {
+controller.retrieveOneEmail = async function(req, res) {
     try {
-        const result = await Analista.findById(req.params.id);
-        if (result) {
-            res.send(result);
-        } else {    
-            res.status(404).end();
+        const emailParaBuscar = req.params.email.toLowerCase(); // Converte para minúsculas
+        
+        const result = await Analista.find({ email: emailParaBuscar }); // Torna a consulta insensível a maiúsculas e minúsculas
+        if (result) { // Verifica se resultados foram encontrados
+          res.send(result);
+        } else {
+          res.status(404).end();
+          console.log(req.params.email);
         }
-    } catch (error) {
+      } catch (error) {
         console.error(error);
         res.status(500).end();
-    }
+      }
 };
 
 controller.retrieveAll = async function(req, res) {
