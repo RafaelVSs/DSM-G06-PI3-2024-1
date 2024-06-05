@@ -7,6 +7,7 @@
 import app from "../app.js";
 import chalk from "chalk";
 import { createServer } from "http";
+import cors from "cors";
 
 /**
  * Get port from environment and store in Express.
@@ -14,6 +15,7 @@ import { createServer } from "http";
 
 const port = normalizePort(process.env.PORT || "8080");
 app.set("port", port);
+
 
 /**
  * Create HTTP server.
@@ -28,6 +30,8 @@ const server = createServer(app);
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
+
+
 
 /**
  * Normalize a port into a number, string, or false.
