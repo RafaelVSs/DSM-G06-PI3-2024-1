@@ -4,9 +4,10 @@ dotenv.config()
 import express, { json, urlencoded } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
-
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 
 import mongoose from 'mongoose'
 mongoose.connect(process.env.DATABASE_URL)
