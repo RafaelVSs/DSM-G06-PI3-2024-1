@@ -11,6 +11,7 @@
 
 # Frontend
 client/node_modules
+client/.next
 
 # Backend
 server/node_modules
