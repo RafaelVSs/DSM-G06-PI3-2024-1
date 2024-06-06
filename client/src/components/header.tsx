@@ -2,23 +2,18 @@
 import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import axios from "axios";
 
 function Header() {
   const [user, setUser] = useState<{ nome: string; localAnalista: string } | null>(null);
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem('email');
-    if (storedEmail) {
-      axios.get(`sua/api/endpoint/${storedEmail}`)
-        .then(response => {
-          setUser(response.data);
-        })
-        .catch(error => {
-          console.error('Erro ao obter dados do usuário:', error);
-        });
+    const nomeAnalista = localStorage.getItem('nomeAnalista');
+    const localAnalista = localStorage.getItem('localAnalista');
+
+    if (nomeAnalista && localAnalista) {
+      setUser({ nome: nomeAnalista, localAnalista });
     } else {
-      console.error('Email não encontrado no armazenamento local.');
+      console.error('Dados do analista não encontrados no armazenamento local.');
     }
   }, []);
 
@@ -45,7 +40,8 @@ function Header() {
         <Button
           className="w-1/4 h-8 bg-[#ffffff] hover:bg-[#29581f] text-black hover:text-white shadow-md rounded-xl hover:shadow-xl px-8 py-3"
           onClick={() => {
-            localStorage.removeItem('email');
+            localStorage.removeItem('nomeAnalista');
+            localStorage.removeItem('localAnalista');
             window.location.href = "/";
           }}
         >

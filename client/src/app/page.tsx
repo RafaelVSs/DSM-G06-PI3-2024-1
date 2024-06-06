@@ -31,7 +31,7 @@ export default function App() {
 
   const handleLogin = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/analista/email/${email}`);
+      const response = await axios.get(`http://localhost:8080/analista/`);
 
       const analistas: Analista[] = response.data;
 
@@ -41,7 +41,8 @@ export default function App() {
 
       if (foundAnalista) {
         // Guardar informações de login no localStorage
-        localStorage.setItem('email', email);
+        localStorage.setItem('nomeAnalista', foundAnalista.nome);
+        localStorage.setItem('localAnalista', foundAnalista.localAnalista);
         setMessage("Login bem-sucedido!");
         window.location.href = "/home";
       } else {
