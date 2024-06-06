@@ -6,6 +6,7 @@ const esquema = new mongoose.Schema({
     solicitante : {type: String, required: false},
     descrição : {type: String, required: true},
     data : {type: Date, required: true},
+    dataAtualizacao: {type: String},
     status : {type: String, required: true},
     tipoProblema : {type: mongoose.ObjectId, ref: 'Categoria', required: true},
 })
