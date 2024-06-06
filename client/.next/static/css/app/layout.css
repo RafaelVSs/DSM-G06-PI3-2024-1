@@ -1445,6 +1445,9 @@ video {
   .w-\[80\%\] {
   width: 80%;
 }
+  .w-\[90\%\] {
+  width: 90%;
+}
   .w-\[95\%\] {
   width: 95%;
 }
@@ -1512,6 +1515,9 @@ video {
 }
   .gap-2 {
   gap: 0.5rem;
+}
+  .gap-4 {
+  gap: 1rem;
 }
   .space-x-1 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;

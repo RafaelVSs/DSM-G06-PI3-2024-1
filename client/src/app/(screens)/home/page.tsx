@@ -66,7 +66,7 @@ export default function Home() {
               <TableHead>Sala</TableHead>
               <TableHead>Categoria</TableHead>
               <TableHead>Abertura</TableHead>
-              <TableHead>Fechamento</TableHead>
+              <TableHead>Atualizado em</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right text-xl">
                 &#160; &#9998;

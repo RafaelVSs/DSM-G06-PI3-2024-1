@@ -8,60 +8,163 @@ import {
 } from "../ui/select";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { IoTimeOutline } from "react-icons/io5";
-import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "./index";
 import React from "react";
+import axios from "axios"; // Importando axios
 
 type AddTicketModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
-const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
-  // ## VARIAVEIS
-  //   const { data: session, status } = useSession();
-  const [currentTime, setCurrentTime] = useState(new Date());
+type Sala = {
+  _id: string;
+  nome: string;
+  localSala: string;
+  __v: number;
+};
 
-  const { register, handleSubmit, watch, setValue } = useForm({
+type Categoria = {
+  _id: string;
+  tipoProblema: string;
+  __v: number;
+};
+
+type FormData = {
+  solicitante: string;
+  nomeSala: string;
+  tipoProblema: string;
+  descrição: string;
+  dataAbertura: string;
+  status: string;
+  analista: string;
+  dataAtualizacao?: string; // Opcional, só será enviado se o status for "Fechado"
+};
+
+const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [salas, setSalas] = useState<Sala[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [analistas, setAnalistas] = useState<any[]>([]);
+  const [nomeAnalista, setNomeAnalista] = useState("");
+  const { register, handleSubmit, setValue, watch } = useForm<FormData>({
     defaultValues: {
-      title: "",
-      description: "",
+      solicitante: "",
+      nomeSala: "",
+      tipoProblema: "",
+      descrição: "",
+      dataAbertura: "",
+      status: "",
+      analista: "",
     },
   });
 
-  const onSubmit = async () => {
-    console.log("aqui tem");
+  useEffect(() => {
+    if (isOpen) {
+      fetch("http://localhost:8080/sala")
+        .then((response) => response.json())
+        .then((data: Sala[]) => setSalas(data))
+        .catch((error) => console.error("Error fetching salas:", error));
+
+      fetch("http://localhost:8080/categoria")
+        .then((response) => response.json())
+        .then((data: Categoria[]) => setCategorias(data))
+        .catch((error) => console.error("Error fetching categorias:", error));
+
+      fetch("http://localhost:8080/analista")
+        .then((response) => response.json())
+        .then((data: any[]) => setAnalistas(data))
+        .catch((error) => console.error("Error fetching analistas:", error));
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    const storedNomeAnalista = localStorage.getItem("nomeAnalista");
+    if (storedNomeAnalista) {
+      setNomeAnalista(storedNomeAnalista);
+      setValue("analista", storedNomeAnalista);
+    }
+  }, [setValue]);
+
+  useEffect(() => {
+    const intervalID = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(intervalID);
+  }, [isOpen]);
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    // Definindo a data de abertura com o date-time atual do sistema e garantindo o formato correto
+    data.dataAbertura = new Date().toISOString();
+
+    // Encontra o analista correspondente ao nome inserido no input
+    const analista = analistas.find(
+      (analista) => analista.nome === data.analista
+    );
+
+    // Se um analista foi encontrado
+    if (analista) {
+      // Define o _id do analista no objeto de data
+      data.analista = analista._id;
+    } else {
+      // Limpa o campo analista se o analista inserido não for encontrado
+      data.analista = "";
+    }
+
+    // Se o status for "Fechado", adicione a data de atualização
+    if (data.status === "Fechado") {
+      data.dataAtualizacao = new Date().toISOString();
+    } else {
+      // Remove a data de atualização se o status não for "Fechado"
+      delete data.dataAtualizacao;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8080/ticket", data);
+      console.log("Form data submitted successfully:", response.data);
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+    }
+    console.log("ticket: ", data);
+    
   };
 
   const handleClose = () => {
     onClose();
   };
 
-  // React.useEffect(() => {}, [isOpen]);
+  const handleSalaChange = (value: string) => {
+    const sala = salas.find((sala) => sala.nome === value);
+    if (sala) {
+      setValue("nomeSala", sala._id);
+    }
+  };
 
-  React.useEffect(() => {
-    // Atualizar a hora atual a cada segundo
-    const intervalID = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+  const handleTipoProblemaChange = (value: string) => {
+    const categoria = categorias.find(
+      (categoria) => categoria.tipoProblema === value
+    );
+    if (categoria) {
+      setValue("tipoProblema", categoria._id);
+    }
+  };
 
-    // Limpar o intervalo quando o componente for desmontado
-    return () => clearInterval(intervalID);
-  }, [isOpen]);
+  const handleStatusChange = (value: string) => {
+    setValue("status", value);
+  };
 
   return (
     <>
       <Modal
         zIndex={100}
         isOpen={isOpen}
-        onClose={() => {
-          onClose(), handleClose();
-        }}
+        onClose={handleClose}
         positionClose="left"
         header={
           <div className="flex flex-col">
@@ -75,116 +178,68 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
         body={
           <>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
-                <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
-                  Setor e Sala
-                </label>
-                <div className="flex justify-between">
-                  <div className="w-[46%] h-12 m-0">
-                    <Select
-                    // onValueChange={(e) => {
-                    //   const value = JSON.parse(e);
-                    //   getCities(value.id);
-                    //   setCustomValue("state", value?.sigla);
-                    // }}
-                    // defaultValue={state}
-                    >
-                      <SelectTrigger className="w-full text-xs">
-                        <SelectValue placeholder="Setor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {/* {states
-                          ?.sort((a, b) => (a.sigla > b.sigla ? 1 : -1))
-                          .map((state, index) => (
-                            <SelectItem
-                              key={index}
-                              value={JSON.stringify({
-                                sigla: state.sigla,
-                                id: state.id,
-                              })}
-                            >
-                              {state.sigla}
-                            </SelectItem>
-                          ))} */}
-                        <SelectItem value="LABS">LABS</SelectItem>
-                        <SelectItem value="RESOLVE">RESOLVE</SelectItem>
-                        <SelectItem value="EC500">EC500</SelectItem>
-                        <SelectItem value="RESOLVE+">RESOLVE+</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="w-[46%] h-12 m-0">
-                    <Select
-                    // onValueChange={(e) => {
-                    //   const value = JSON.parse(e);
-                    //   setCustomValue("city", value?.nome);
-                    // }}
-                    // defaultValue={city}
-                    >
+              <div className="flex mx-1 px-2 py-1 rounded-xl justify-between gap-4">
+                <div className="flex w-[90%] flex-col">
+                  <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
+                    Sala
+                  </label>
+                  <div className="w-full h-12 m-0">
+                    <Select onValueChange={handleSalaChange}>
                       <SelectTrigger className="w-full text-xs">
                         <SelectValue placeholder="Sala" />
                       </SelectTrigger>
                       <SelectContent>
-                        {/* {cities?.map((city, index) => (
-                          <SelectItem
-                            key={index}
-                            value={JSON.stringify({
-                              nome: city.nome,
-                            })}
-                          >
-                            {city.nome}
+                        {salas.map((sala) => (
+                          <SelectItem key={sala._id} value={sala.nome}>
+                            {sala.nome}
                           </SelectItem>
-                        ))} */}
-                        <SelectItem value="LABS">LABS</SelectItem>
-                        <SelectItem value="RESOLVE">RESOLVE</SelectItem>
-                        <SelectItem value="EC500">EC500</SelectItem>
-                        <SelectItem value="RESOLVE+">RESOLVE+</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
+
+                <div className="flex flex-col w-[90%]">
+                  <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
+                    Analista
+                  </label>
+                  <div className="w-full h-12 m-0">
+                    <Input
+                      placeholder={"Analista"}
+                      type={"text"}
+                      id={"analista"}
+                      className="text-x rounded-2xl"
+                      {...register("analista")}
+                      onChange={(e) => setValue("analista", e.target.value)} // Chama setValue no evento de mudança
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
+              <div className="flex flex-col mx-1 px-2 py-1 rounded-xl">
                 <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
                   Tipo de Chamado
                 </label>
                 <div className="w-[100%] h-12 m-auto">
-                  <Select
-                  // onValueChange={(e) => {
-                  //   const value = JSON.parse(e);
-                  //   setCustomValue("modality", value?.id);
-                  // }}
-                  // defaultValue={
-                  //   modalities?.find((item) => item?.id === modality)
-                  //     ?.modality
-                  // }
-                  >
+                  <Select onValueChange={handleTipoProblemaChange}>
                     <SelectTrigger className="w-full text-xs">
                       <SelectValue placeholder="Tipo de problema" />
                     </SelectTrigger>
                     <SelectContent>
-                      {/* {modalities?.map((item, index) => (
+                      {categorias.map((categoria) => (
                         <SelectItem
-                          key={item.id}
-                          value={JSON.stringify({
-                            modality: item.modality,
-                            id: item.id,
-                          })}
+                          key={categoria._id}
+                          value={categoria.tipoProblema}
                         >
-                          {item.modality}
+                          {categoria.tipoProblema}
                         </SelectItem>
-                      ))} */}
-                      <SelectItem value="SOFTWARE">SOFTWARE</SelectItem>
-                      <SelectItem value="HARDWARE">HARDWARE</SelectItem>
-                      <SelectItem value="REDE">REDE</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
+              <div className="flex flex-col mx-1 px-2 py-1 rounded-xl">
                 <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-1">
                   Solicitante
                 </label>
@@ -192,42 +247,36 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
                   <Input
                     placeholder={"Solicitante"}
                     type={"text"}
-                    id={"name"}
+                    id={"solicitante"}
                     className="text-x rounded-2xl"
-                    // register={register}
+                    {...register("solicitante")}
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
+              <div className="flex flex-col mx-1 px-2 py-1 rounded-xl">
                 <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-1">
                   Descrição
                 </label>
                 <div className="w-[100%] h-12 m-auto">
                   <textarea
-                    name="Descrição"
-                    id="descricao"
+                    id="descrição"
                     placeholder="Descrição..."
                     className="w-full max-h-[70px] min-h-[70px] text-xs p-2 rounded-2xl border-2 border-slate-200 focus:ring-1 focus:ring-[#15803c] focus:ring-offset-1 focus:outline-none"
+                    {...register("descrição")}
                   ></textarea>
-                  {/* <Input
-                    placeholder={""}
-                    type={"text"}
-                    id={"name"}
-                    className="h-20"
-                    // register={register}
-                  /> */}
                 </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl mt-5 mb-2">
+              <div className="flex flex-col mx-1 px-2 py-1 rounded-xl mt-5 mb-2">
                 <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-1">
                   Status
                 </label>
                 <div className="grid-cols-3 justify-between">
                   <RadioGroup
                     className="flex justify-center gap-2 md:gap-20 w-full"
-                    defaultValue="ticketStatus"
+                    onValueChange={handleStatusChange}
+                    defaultValue={undefined}
                   >
                     <div className="flex items-center space-x-1 md:space-x-2">
                       <RadioGroupItem
@@ -263,42 +312,16 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
-                <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
-                  Data e hora de abertura
-                </label>
-                <div className="flex justify-between">
-                  <div className="w-[46%] h-12 m-0">
-                    <Input
-                      placeholder={"Data de Abertura"}
-                      type={"date"}
-                      id={"name"}
-                      className="text-xs rounded-2xl justify-end"
-                      // register={register}
-                    />
-                  </div>
-
-                  <div className="w-[46%] h-12 m-0">
-                    <Input
-                      placeholder={"Hora de Abertura"}
-                      type={"time"}
-                      id={"name"}
-                      className="text-xs rounded-2xl justify-end"
-                      // register={register}
-                    />
-                  </div>
-                </div>
-              </div>
-
               <div className="w-full flex my-1 mx-1 px-2 py-1 justify-end items-baseline">
                 <p className="flex gap-1 items-center text-xs text-black mr-2">
-                <IoTimeOutline /> {currentTime.toLocaleString()}
+                  <IoTimeOutline /> {currentTime.toLocaleString()}
                 </p>
                 <Button
                   className="w-1/4 h-10 bg-[#3e8721] hover:bg-[#29581f] text-white shadow-md rounded-xl hover:shadow-xl"
                   type="submit"
                   variant="default"
                   size="default"
+                  onSubmit={handleSubmit(onSubmit)}
                 >
                   Criar
                 </Button>
