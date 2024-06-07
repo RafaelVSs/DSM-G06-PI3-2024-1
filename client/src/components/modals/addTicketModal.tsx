@@ -52,7 +52,7 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [analistas, setAnalistas] = useState<any[]>([]);
   const [nomeAnalista, setNomeAnalista] = useState("");
-  const { register, handleSubmit, setValue, watch } = useForm<FormData>({
+  const { register, handleSubmit, setValue, watch, reset } = useForm<FormData>({
     defaultValues: {
       solicitante: "",
       nomeSala: "",
@@ -128,14 +128,29 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
     try {
       const response = await axios.post("http://localhost:8080/ticket", data);
       console.log("Form data submitted successfully:", response.data);
+      // Fechar o modal após o sucesso na criação do ticket
+      onClose();
     } catch (error) {
       console.error("Error submitting form data:", error);
     }
     console.log("ticket: ", data);
-    
   };
 
   const handleClose = () => {
+    // Preservar o valor do campo analista
+    const currentAnalista = watch("analista");
+
+    // Resetar o formulário e definir o campo analista novamente
+    reset({
+      solicitante: "",
+      nomeSala: "",
+      tipoProblema: "",
+      descrição: "",
+      dataAbertura: "",
+      status: "",
+      analista: currentAnalista,
+    });
+
     onClose();
   };
 
