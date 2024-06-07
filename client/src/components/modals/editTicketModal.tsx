@@ -62,39 +62,39 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({ isOpen, onClose, tick
 
   useEffect(() => {
     if (isOpen) {
-      fetch("http://localhost:8080/sala")
-        .then((response) => response.json())
-        .then((data: Sala[]) => setSalas(data))
-        .catch((error) => console.error("Error fetching salas:", error));
-
-      fetch("http://localhost:8080/categoria")
-        .then((response) => response.json())
-        .then((data: Categoria[]) => setCategorias(data))
-        .catch((error) => console.error("Error fetching categorias:", error));
-
-      fetch("http://localhost:8080/analista")
-        .then((response) => response.json())
-        .then((data: Analista[]) => setAnalistas(data))
-        .catch((error) => console.error("Error fetching analistas:", error));
-
+      // Fetch data for salas, categorias, and analistas
+      Promise.all([
+        fetch("http://localhost:8080/sala").then((response) => response.json()),
+        fetch("http://localhost:8080/categoria").then((response) => response.json()),
+        fetch("http://localhost:8080/analista").then((response) => response.json())
+      ])
+      .then(([salasData, categoriasData, analistasData]) => {
+        setSalas(salasData);
+        setCategorias(categoriasData);
+        setAnalistas(analistasData);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  
       // Fetch the ticket data when the modal opens
-      axios.get(`http://localhost:8080/ticket/${ticketId}`)
-        .then((response) => {
-          const ticketData = response.data;
-          setValue("solicitante", ticketData.solicitante);
-          setValue("descrição", ticketData.descrição);
-          setValue("status", ticketData.status);
-          setValue("nomeSala", ticketData.nomeSala);
-          setValue("tipoProblema", ticketData.tipoProblema);
-
-          // Find and set the analista name from the ticket data
-          const analistaId = ticketData.analista;
-          const analistaName = analistas.find((a) => a._id === analistaId)?.nome || "";
-          setValue("analista", analistaName);
-        })
-        .catch((error) => console.error("Error fetching ticket data:", error));
+      if (ticketId) {
+        axios.get(`http://localhost:8080/ticket/${ticketId}`)
+          .then((response) => {
+            const ticketData = response.data;
+            setValue("solicitante", ticketData.solicitante);
+            setValue("descrição", ticketData.descrição);
+            setValue("status", ticketData.status);
+            setValue("nomeSala", ticketData.nomeSala);
+            setValue("tipoProblema", ticketData.tipoProblema);
+  
+            // Find and set the analista name from the ticket data
+            const analistaId = ticketData.analista;
+            const analistaName = analistas.find((a) => a._id === analistaId)?.nome || "";
+            setValue("analista", analistaName);
+          })
+          .catch((error) => console.error("Error fetching ticket data:", error));
+      }
     }
-  }, [isOpen, ticketId, setValue, analistas]); // Add analistas as a dependency
+  }, [isOpen, ticketId, setValue, analistas]);
 
   useEffect(() => {
     const intervalID = setInterval(() => {
