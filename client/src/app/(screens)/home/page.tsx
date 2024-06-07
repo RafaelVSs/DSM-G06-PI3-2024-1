@@ -41,8 +41,12 @@ interface Categoria {
 export default function Home() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [salas, setSalas] = useState<{ [key: string]: Sala }>({});
-  const [categorias, setCategorias] = useState<{ [key: string]: Categoria }>({});
+  const [categorias, setCategorias] = useState<{ [key: string]: Categoria }>(
+    {}
+  );
   const [currentTime, setCurrentTime] = useState(new Date());
+  // const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -58,11 +62,17 @@ export default function Home() {
         const analista = analistas.find((a: any) => a.nome === nomeAnalista);
 
         if (analista) {
-          const responseTickets = await fetch(`http://localhost:8080/ticket?analista=${analista._id}`);
+          const responseTickets = await fetch(
+            `http://localhost:8080/ticket?analista=${analista._id}`
+          );
           const ticketsData = await responseTickets.json();
 
-          const salaIds = Array.from(new Set(ticketsData.map((ticket: Ticket) => ticket.nomeSala)));
-          const categoriaIds = Array.from(new Set(ticketsData.map((ticket: Ticket) => ticket.tipoProblema)));
+          const salaIds = Array.from(
+            new Set(ticketsData.map((ticket: Ticket) => ticket.nomeSala))
+          );
+          const categoriaIds = Array.from(
+            new Set(ticketsData.map((ticket: Ticket) => ticket.tipoProblema))
+          );
 
           const responseSalas = await fetch("http://localhost:8080/sala");
           const allSalas: Sala[] = await responseSalas.json();
@@ -71,7 +81,9 @@ export default function Home() {
             return acc;
           }, {} as { [key: string]: Sala });
 
-          const responseCategorias = await fetch("http://localhost:8080/categoria");
+          const responseCategorias = await fetch(
+            "http://localhost:8080/categoria"
+          );
           const allCategorias: Categoria[] = await responseCategorias.json();
           const categoriasMap = allCategorias.reduce((acc, categoria) => {
             acc[categoria._id] = categoria;
@@ -114,9 +126,13 @@ export default function Home() {
     setIsModalOpen(false);
   };
 
-  const openEditModal = () => {
+  const openEditModal = (ticketId: string) => {
+    setSelectedTicketId(ticketId);
     setIsEditModalOpen(true);
   };
+  // const openEditModal = () => {
+  //   setIsEditModalOpen(true);
+  // };
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
@@ -136,7 +152,9 @@ export default function Home() {
               <TableHead>Abertura</TableHead>
               <TableHead>Atualizado em</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right text-xl">&#160; &#9998;</TableHead>
+              <TableHead className="text-right text-xl">
+                &#160; &#9998;
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -149,7 +167,9 @@ export default function Home() {
                   <TableCell>{sala?.localSala}</TableCell>
                   <TableCell>{sala?.nome}</TableCell>
                   <TableCell>{categoria?.tipoProblema}</TableCell>
-                  <TableCell>{new Date(ticket.dataAbertura).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {new Date(ticket.dataAbertura).toLocaleDateString()}
+                  </TableCell>
                   <TableCell>
                     {ticket.dataAtualizacao
                       ? new Date(ticket.dataAtualizacao).toLocaleDateString()
@@ -158,7 +178,7 @@ export default function Home() {
                   <TableCell>{ticket.status}</TableCell>
                   <TableCell
                     className="flex justify-end cursor-pointer"
-                    onClick={openEditModal}
+                    onClick={() => openEditModal(ticket._id)} // Passa o ID do ticket aqui
                   >
                     Editar&#160; &#9998;
                   </TableCell>
@@ -184,7 +204,11 @@ export default function Home() {
         </Button>
 
         <AddTicketModal isOpen={isModalOpen} onClose={closeModal} />
-        <EditTicketModal isOpen={isEditModalOpen} onClose={closeEditModal} />
+        <EditTicketModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          ticketId={selectedTicketId ? selectedTicketId : ""}
+        />
       </div>
       <Footer />
     </main>

@@ -51,7 +51,6 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
   const [salas, setSalas] = useState<Sala[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [analistas, setAnalistas] = useState<any[]>([]);
-  const [nomeAnalista, setNomeAnalista] = useState("");
   const { register, handleSubmit, setValue, watch, reset } = useForm<FormData>({
     defaultValues: {
       solicitante: "",
@@ -86,7 +85,6 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     const storedNomeAnalista = localStorage.getItem("nomeAnalista");
     if (storedNomeAnalista) {
-      setNomeAnalista(storedNomeAnalista);
       setValue("analista", storedNomeAnalista);
     }
   }, [setValue]);
@@ -100,35 +98,43 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    // Definindo a data de abertura com o date-time atual do sistema e garantindo o formato correto
     data.dataAbertura = new Date().toISOString();
 
-    // Encontra o analista correspondente ao nome inserido no input
+    // Encontre o analista correspondente pelo nome e obtenha o ID
     const analista = analistas.find(
       (analista) => analista.nome === data.analista
     );
 
-    // Se um analista foi encontrado
     if (analista) {
-      // Define o _id do analista no objeto de data
-      data.analista = analista._id;
+      data.analista = analista._id; // Converta o nome do analista para o ID para enviar ao backend
     } else {
-      // Limpa o campo analista se o analista inserido não for encontrado
       data.analista = "";
     }
 
-    // Se o status for "Fechado", adicione a data de atualização
     if (data.status === "Fechado") {
       data.dataAtualizacao = new Date().toISOString();
     } else {
-      // Remove a data de atualização se o status não for "Fechado"
       delete data.dataAtualizacao;
     }
 
     try {
       const response = await axios.post("http://localhost:8080/ticket", data);
       console.log("Form data submitted successfully:", response.data);
-      // Fechar o modal após o sucesso na criação do ticket
+
+      // Após enviar o ticket, restaure o nome do analista no formulário
+      const nomeAnalista = analista ? analista.nome : "";
+
+      // Resete o formulário e restaure o nome do analista
+      reset({
+        solicitante: "",
+        nomeSala: "",
+        tipoProblema: "",
+        descrição: "",
+        dataAbertura: "",
+        status: "",
+        analista: nomeAnalista, // Restaurar o nome do analista após o reset
+      });
+
       onClose();
     } catch (error) {
       console.error("Error submitting form data:", error);
@@ -137,10 +143,10 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
   };
 
   const handleClose = () => {
-    // Preservar o valor do campo analista
-    const currentAnalista = watch("analista");
+    // Preserve o valor do campo analista
+    const nomeAnalista = watch("analista");
 
-    // Resetar o formulário e definir o campo analista novamente
+    // Resete o formulário e defina o campo analista novamente
     reset({
       solicitante: "",
       nomeSala: "",
@@ -148,7 +154,7 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
       descrição: "",
       dataAbertura: "",
       status: "",
-      analista: currentAnalista,
+      analista: nomeAnalista, // Restaurar o nome do analista após o reset
     });
 
     onClose();
