@@ -7,7 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAddTicketModal } from "@/utils/hooks/useAddTicketModal";
 import EditTicketModal from "@/components/modals/editTicketModal";
 import AddTicketModal from "@/components/modals/addTicketModal";
 import React, { useEffect, useState } from "react";
@@ -15,49 +14,134 @@ import { Button } from "@/components/ui/button";
 import { IoTimeOutline } from "react-icons/io5";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
-import { useRouter } from "next/router";
+
+interface Ticket {
+  _id: string;
+  nomeSala: string;
+  analista: string;
+  solicitante: string;
+  descrição: string;
+  dataAbertura: string;
+  status: string;
+  tipoProblema: string;
+  dataAtualizacao?: string; // Tornando opcional
+}
+
+interface Sala {
+  _id: string;
+  nome: string;
+  localSala: string;
+}
+
+interface Categoria {
+  _id: string;
+  tipoProblema: string;
+}
 
 export default function Home() {
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [salas, setSalas] = useState<{ [key: string]: Sala }>({});
+  const [categorias, setCategorias] = useState<{ [key: string]: Categoria }>(
+    {}
+  );
   const [currentTime, setCurrentTime] = useState(new Date());
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  const addTicketModal = {
-    isOpen,
-    onOpen: () => setIsOpen(true),
-    onClose: () => setIsOpen(false),
-  };
+  // const [isEditModalOpen, setEditModalOpen] = useState(false);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  function openModal() {
-    console.log("Opening modal...");
-    setIsModalOpen(true);
-  }
+  const fetchTickets = async () => {
+    try {
+      const nomeAnalista = localStorage.getItem("nomeAnalista");
 
-  function openEditModal() {
-    console.log("Opening modal...");
-    setIsEditModalOpen(true);
-  }
+      if (nomeAnalista) {
+        const responseAnalistas = await fetch("http://localhost:8080/analista");
+        const analistas = await responseAnalistas.json();
 
-  // const router = useRouter();
+        const analista = analistas.find((a: any) => a.nome === nomeAnalista);
+
+        if (analista) {
+          const responseTickets = await fetch(
+            `http://localhost:8080/ticket?analista=${analista._id}`
+          );
+          const ticketsData = await responseTickets.json();
+
+          const salaIds = Array.from(
+            new Set(ticketsData.map((ticket: Ticket) => ticket.nomeSala))
+          );
+          const categoriaIds = Array.from(
+            new Set(ticketsData.map((ticket: Ticket) => ticket.tipoProblema))
+          );
+
+          const responseSalas = await fetch("http://localhost:8080/sala");
+          const allSalas: Sala[] = await responseSalas.json();
+          const salasMap = allSalas.reduce((acc, sala) => {
+            acc[sala._id] = sala;
+            return acc;
+          }, {} as { [key: string]: Sala });
+
+          const responseCategorias = await fetch(
+            "http://localhost:8080/categoria"
+          );
+          const allCategorias: Categoria[] = await responseCategorias.json();
+          const categoriasMap = allCategorias.reduce((acc, categoria) => {
+            acc[categoria._id] = categoria;
+            return acc;
+          }, {} as { [key: string]: Categoria });
+
+          setSalas(salasMap);
+          setCategorias(categoriasMap);
+          setTickets(ticketsData);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching tickets:", error);
+    }
+  };
 
   useEffect(() => {
-    // Atualizar a hora atual a cada segundo
     const intervalID = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
 
-    // Limpar o intervalo quando o componente for desmontado
     return () => clearInterval(intervalID);
   }, []);
 
+  useEffect(() => {
+    fetchTickets();
+  }, []);
+
+  useEffect(() => {
+    if (!isModalOpen || !isEditModalOpen) {
+      fetchTickets();
+    }
+  }, [isModalOpen]);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const openEditModal = (ticketId: string) => {
+    setSelectedTicketId(ticketId);
+    setIsEditModalOpen(true);
+  };
+  // const openEditModal = () => {
+  //   setIsEditModalOpen(true);
+  // };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[#4677da] bg-cover bg-center">
-      <Header></Header>
-      <div className="fixed w-[98%] lg:w-[95%] max-h-[520px] md:max-h-[200px] lg:max-h-[520px] justify-center text-xs lg:text-sm flex rounded-2xl border-2 ">
+      <Header />
+      <div className="fixed w-[98%] lg:w-[95%] max-h-[520px] md:max-h-[200px] lg:max-h-[520px] justify-center text-xs lg:text-sm flex rounded-2xl border-2">
         <Table>
           <TableHeader className="sticky top-0">
             <TableRow>
@@ -66,7 +150,7 @@ export default function Home() {
               <TableHead>Sala</TableHead>
               <TableHead>Categoria</TableHead>
               <TableHead>Abertura</TableHead>
-              <TableHead>Fechamento</TableHead>
+              <TableHead>Atualizado em</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right text-xl">
                 &#160; &#9998;
@@ -74,187 +158,33 @@ export default function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell className="font-medium">0001</TableCell>
-              <TableCell>LABS</TableCell>
-              <TableCell>Galileu Galilei</TableCell>
-              <TableCell>Software</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Finalizado</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0002</TableCell>
-              <TableCell>Resolve</TableCell>
-              <TableCell>LV 200</TableCell>
-              <TableCell>Hardware</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Pendente</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0003</TableCell>
-              <TableCell>EC500</TableCell>
-              <TableCell>Luiz Honório</TableCell>
-              <TableCell>Rede</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Aberto</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0004</TableCell>
-              <TableCell>Resolve+</TableCell>
-              <TableCell>Camem Miranda</TableCell>
-              <TableCell>Hardware</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Finalizado</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-
-            <TableRow>
-              <TableCell className="font-medium">0001</TableCell>
-              <TableCell>LABS</TableCell>
-              <TableCell>Galileu Galilei</TableCell>
-              <TableCell>Software</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Finalizado</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0002</TableCell>
-              <TableCell>Resolve</TableCell>
-              <TableCell>LV 200</TableCell>
-              <TableCell>Hardware</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Pendente</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0003</TableCell>
-              <TableCell>EC500</TableCell>
-              <TableCell>Luiz Honório</TableCell>
-              <TableCell>Rede</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Aberto</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0004</TableCell>
-              <TableCell>Resolve+</TableCell>
-              <TableCell>Camem Miranda</TableCell>
-              <TableCell>Hardware</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Finalizado</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0001</TableCell>
-              <TableCell>LABS</TableCell>
-              <TableCell>Galileu Galilei</TableCell>
-              <TableCell>Software</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Finalizado</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0002</TableCell>
-              <TableCell>Resolve</TableCell>
-              <TableCell>LV 200</TableCell>
-              <TableCell>Hardware</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Pendente</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0003</TableCell>
-              <TableCell>EC500</TableCell>
-              <TableCell>Luiz Honório</TableCell>
-              <TableCell>Rede</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Aberto</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell className="font-medium">0004</TableCell>
-              <TableCell>Resolve+</TableCell>
-              <TableCell>Camem Miranda</TableCell>
-              <TableCell>Hardware</TableCell>
-              <TableCell>01/01/2021</TableCell>
-              <TableCell>01/02/2021</TableCell>
-              <TableCell>Finalizado</TableCell>
-              <TableCell
-                className="flex justify-end cursor-pointer"
-                onClick={openEditModal}
-              >
-                Editar&#160; &#9998;
-              </TableCell>
-            </TableRow>
+            {tickets.map((ticket) => {
+              const sala = salas[ticket.nomeSala];
+              const categoria = categorias[ticket.tipoProblema];
+              return (
+                <TableRow key={ticket._id}>
+                  <TableCell className="font-medium">{ticket._id}</TableCell>
+                  <TableCell>{sala?.localSala}</TableCell>
+                  <TableCell>{sala?.nome}</TableCell>
+                  <TableCell>{categoria?.tipoProblema}</TableCell>
+                  <TableCell>
+                    {new Date(ticket.dataAbertura).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {ticket.dataAtualizacao
+                      ? new Date(ticket.dataAtualizacao).toLocaleDateString()
+                      : "--/--/----"}
+                  </TableCell>
+                  <TableCell>{ticket.status}</TableCell>
+                  <TableCell
+                    className="flex justify-end cursor-pointer"
+                    onClick={() => openEditModal(ticket._id)} // Passa o ID do ticket aqui
+                  >
+                    Editar&#160; &#9998;
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
@@ -273,16 +203,14 @@ export default function Home() {
           Novo Ticket
         </Button>
 
-        <AddTicketModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
+        <AddTicketModal isOpen={isModalOpen} onClose={closeModal} />
         <EditTicketModal
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
+          ticketId={selectedTicketId ? selectedTicketId : ""}
         />
       </div>
-      <Footer></Footer>
+      <Footer />
     </main>
   );
 }

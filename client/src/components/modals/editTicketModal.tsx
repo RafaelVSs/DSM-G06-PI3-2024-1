@@ -1,4 +1,3 @@
-"use client";
 import {
   Select,
   SelectContent,
@@ -8,62 +7,191 @@ import {
 } from "../ui/select";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { IoTimeOutline } from "react-icons/io5";
-import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "./index";
-import React from "react";
+import axios from "axios";
 
 type EditTicketModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  ticketId: string;
+};
+
+type Sala = {
+  _id: string;
+  nome: string;
+  localSala: string;
+  __v: number;
+};
+
+type Categoria = {
+  _id: string;
+  tipoProblema: string;
+  __v: number;
+};
+
+type Analista = {
+  _id: string;
+  nome: string;
+  __v: number;
+};
+
+type FormData = {
+  solicitante: string;
+  nomeSala: string;
+  tipoProblema: string;
+  descrição: string;
+  dataAbertura: string;
+  status: string;
+  analista: string;
+  dataAtualizacao?: string;
 };
 
 const EditTicketModal: React.FC<EditTicketModalProps> = ({
   isOpen,
   onClose,
+  ticketId,
 }) => {
-  //   const { data: session, status } = useSession();
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+  const [salas, setSalas] = useState<Sala[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [analistas, setAnalistas] = useState<Analista[]>([]);
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+  const { register, handleSubmit, setValue, reset, watch } =
+    useForm<FormData>();
 
-  const { register, handleSubmit, watch, setValue } = useForm({
-    defaultValues: {
-      title: "",
-      description: "",
-    },
-  });
+  useEffect(() => {
+    if (isOpen) {
+      setIsLoading(true); // Start loading
 
-  const onSubmit = async () => {
-    console.log("aqui tem");
+      Promise.all([
+        fetch("http://localhost:8080/sala").then((response) => response.json()),
+        fetch("http://localhost:8080/categoria").then((response) =>
+          response.json()
+        ),
+        fetch("http://localhost:8080/analista").then((response) =>
+          response.json()
+        ),
+      ])
+        .then(([salasData, categoriasData, analistasData]) => {
+          setSalas(salasData);
+          setCategorias(categoriasData);
+          setAnalistas(analistasData);
+          setDataLoaded(true);
+
+          if (ticketId) {
+            axios
+              .get(`http://localhost:8080/ticket/${ticketId}`)
+              .then((response) => {
+                const ticketData = response.data;
+                setValue("solicitante", ticketData.solicitante);
+                setValue("descrição", ticketData.descrição);
+                setValue("status", ticketData.status);
+                setValue("nomeSala", ticketData.nomeSala);
+                setValue("tipoProblema", ticketData.tipoProblema);
+
+                const analistaId = ticketData.analista;
+                const analista = analistasData.find(
+                  (a: Analista) => a._id === analistaId
+                );
+                if (analista) {
+                  setValue("analista", analista.nome);
+                }
+
+                setIsLoading(false); // End loading after fetching ticket data
+              })
+              .catch((error) => {
+                console.error("Error fetching ticket data:", error);
+                setIsLoading(false); // End loading even if there's an error
+              });
+          } else {
+            setIsLoading(false); // End loading if no ticketId
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          setIsLoading(false); // End loading if there's an error
+        });
+    }
+  }, [isOpen, ticketId, setValue]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const intervalID = setInterval(() => {
+        setCurrentTime(new Date());
+      }, 1000);
+
+      return () => clearInterval(intervalID);
+    }
+  }, [isOpen]);
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    data.dataAtualizacao = new Date().toISOString();
+
+    const analista = analistas.find(
+      (analista) => analista.nome === data.analista
+    );
+    if (analista) {
+      data.analista = analista._id;
+    } else {
+      data.analista = "";
+    }
+
+    console.log("Form data to be submitted:", data);
+
+    try {
+      const response = await axios.put(`http://localhost:8080/ticket/${ticketId}`, data);
+      console.log("Form data updated successfully:", response.data);
+      onClose();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error updating form data:", error.response?.data);
+      } else {
+        console.error("Unexpected error updating form data:", error);
+      }
+    }
   };
 
   const handleClose = () => {
+    reset();
     onClose();
+    setDataLoaded(false);
   };
 
-  // React.useEffect(() => {}, [isOpen]);
+  const handleSalaChange = (value: string) => {
+    const sala = salas.find((sala) => sala._id === value);
+    if (sala) {
+      setValue("nomeSala", sala._id);
+    }
+  };
 
-  React.useEffect(() => {
-    // Atualizar a hora atual a cada segundo
-    const intervalID = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+  const handleTipoProblemaChange = (value: string) => {
+    const categoria = categorias.find((categoria) => categoria._id === value);
+    if (categoria) {
+      setValue("tipoProblema", categoria._id);
+    }
+  };
 
-    // Limpar o intervalo quando o componente for desmontado
-    return () => clearInterval(intervalID);
-  }, [isOpen]);
+  const handleStatusChange = (value: string) => {
+    setValue("status", value);
+  };
+
+  const watchedNomeSala = watch("nomeSala");
+  const watchedTipoProblema = watch("tipoProblema");
+  const watchedStatus = watch("status");
+  const watchedAnalista = watch("analista");
 
   return (
     <>
       <Modal
         zIndex={100}
         isOpen={isOpen}
-        onClose={() => {
-          onClose(), handleClose();
-        }}
+        onClose={handleClose}
         positionClose="left"
         header={
           <div className="flex flex-col">
@@ -75,161 +203,115 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
           </div>
         }
         body={
-          <>
+          isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <p>Loading...</p>
+            </div>
+          ) : (
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
-                <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
-                  Setor e Sala
-                </label>
-                <div className="flex justify-between">
-                  <div className="w-[46%] h-12 m-0">
+              <div className="flex mx-1 px-2 py-1 rounded-xl justify-between gap-4">
+                <div className="flex w-[90%] flex-col">
+                  <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
+                    Sala
+                  </label>
+                  <div className="w-full h-12 m-0">
                     <Select
-                    // onValueChange={(e) => {
-                    //   const value = JSON.parse(e);
-                    //   getCities(value.id);
-                    //   setCustomValue("state", value?.sigla);
-                    // }}
-                    // defaultValue={state}
-                    >
-                      <SelectTrigger className="w-full text-xs">
-                        <SelectValue placeholder="Setor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {/* {states
-                          ?.sort((a, b) => (a.sigla > b.sigla ? 1 : -1))
-                          .map((state, index) => (
-                            <SelectItem
-                              key={index}
-                              value={JSON.stringify({
-                                sigla: state.sigla,
-                                id: state.id,
-                              })}
-                            >
-                              {state.sigla}
-                            </SelectItem>
-                          ))} */}
-                        <SelectItem value="LABS">LABS</SelectItem>
-                        <SelectItem value="RESOLVE">RESOLVE</SelectItem>
-                        <SelectItem value="EC500">EC500</SelectItem>
-                        <SelectItem value="RESOLVE+">RESOLVE+</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="w-[46%] h-12 m-0">
-                    <Select
-                    // onValueChange={(e) => {
-                    //   const value = JSON.parse(e);
-                    //   setCustomValue("city", value?.nome);
-                    // }}
-                    // defaultValue={city}
+                      value={watchedNomeSala}
+                      onValueChange={handleSalaChange}
                     >
                       <SelectTrigger className="w-full text-xs">
                         <SelectValue placeholder="Sala" />
                       </SelectTrigger>
                       <SelectContent>
-                        {/* {cities?.map((city, index) => (
-                          <SelectItem
-                            key={index}
-                            value={JSON.stringify({
-                              nome: city.nome,
-                            })}
-                          >
-                            {city.nome}
+                        {salas.map((sala) => (
+                          <SelectItem key={sala._id} value={sala._id}>
+                            {sala.nome}
                           </SelectItem>
-                        ))} */}
-                        <SelectItem value="LABS">LABS</SelectItem>
-                        <SelectItem value="RESOLVE">RESOLVE</SelectItem>
-                        <SelectItem value="EC500">EC500</SelectItem>
-                        <SelectItem value="RESOLVE+">RESOLVE+</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
+
+                <div className="flex flex-col w-[90%]">
+                  <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
+                    Analista
+                  </label>
+                  <div className="w-full h-12 m-0">
+                    <Input
+                      placeholder={"Analista"}
+                      type={"text"}
+                      id={"analista"}
+                      className="text-x rounded- cursor-default"
+                      disabled
+                      value={watchedAnalista}
+                      {...register("analista")}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
-                <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
+              <div className="flex flex-col mx-1 px-2 py-1 rounded-xl">
+                <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-1">
                   Tipo de Chamado
                 </label>
                 <div className="w-[100%] h-12 m-auto">
                   <Select
-                  // onValueChange={(e) => {
-                  //   const value = JSON.parse(e);
-                  //   setCustomValue("modality", value?.id);
-                  // }}
-                  // defaultValue={
-                  //   modalities?.find((item) => item?.id === modality)
-                  //     ?.modality
-                  // }
+                    value={watchedTipoProblema}
+                    onValueChange={handleTipoProblemaChange}
                   >
                     <SelectTrigger className="w-full text-xs">
                       <SelectValue placeholder="Tipo de problema" />
                     </SelectTrigger>
                     <SelectContent>
-                      {/* {modalities?.map((item, index) => (
-                        <SelectItem
-                          key={item.id}
-                          value={JSON.stringify({
-                            modality: item.modality,
-                            id: item.id,
-                          })}
-                        >
-                          {item.modality}
+                      {categorias.map((categoria) => (
+                        <SelectItem key={categoria._id} value={categoria._id}>
+                          {categoria.tipoProblema}
                         </SelectItem>
-                      ))} */}
-                      <SelectItem value="SOFTWARE">SOFTWARE</SelectItem>
-                      <SelectItem value="HARDWARE">HARDWARE</SelectItem>
-                      <SelectItem value="REDE">REDE</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
+              <div className="flex flex-col mx-1 px-2 py-1 rounded-xl">
                 <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-1">
                   Solicitante
                 </label>
                 <div className="w-[100%] h-12 m-auto">
                   <Input
-                    placeholder={"Solicitante"}
-                    type={"text"}
-                    id={"name"}
-                    className="text-x rounded-2xl"
-                    // register={register}
+                    placeholder="Solicitante"
+                    type="text"
+                    id="solicitante"
+                    className="w-full text-xs rounded-2xl"
+                    {...register("solicitante")}
                   />
                 </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
+              <div className="flex flex-col mx-1 px-2 py-1 rounded-xl">
                 <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-1">
                   Descrição
                 </label>
                 <div className="w-[100%] h-12 m-auto">
                   <textarea
-                    name="Descrição"
-                    id="descricao"
+                    id="descrição"
                     placeholder="Descrição..."
                     className="w-full max-h-[70px] min-h-[70px] text-xs p-2 rounded-2xl border-2 border-slate-200 focus:ring-1 focus:ring-[#15803c] focus:ring-offset-1 focus:outline-none"
+                    {...register("descrição")}
                   ></textarea>
-                  {/* <Input
-                    placeholder={""}
-                    type={"text"}
-                    id={"name"}
-                    className="h-20"
-                    // register={register}
-                  /> */}
                 </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl mt-5 mb-2">
+              <div className="flex flex-col mx-1 px-2 py-1 rounded-xl mt-5 mb-2">
                 <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-1">
                   Status
                 </label>
                 <div className="grid-cols-3 justify-between">
                   <RadioGroup
                     className="flex justify-center gap-2 md:gap-20 w-full"
-                    defaultValue="ticketStatus"
+                    value={watchedStatus}
+                    onValueChange={handleStatusChange}
                   >
                     <div className="flex items-center space-x-1 md:space-x-2">
                       <RadioGroupItem
@@ -265,33 +347,6 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
                 </div>
               </div>
 
-              <div className="flex flex-col  mx-1 px-2 py-1 rounded-xl">
-                <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
-                  Data e hora da edição
-                </label>
-                <div className="flex justify-between">
-                  <div className="w-[46%] h-12 m-0">
-                    <Input
-                      placeholder={"Data de Abertura"}
-                      type={"date"}
-                      id={"name"}
-                      className="text-xs rounded-2xl justify-end"
-                      // register={register}
-                    />
-                  </div>
-
-                  <div className="w-[46%] h-12 m-0">
-                    <Input
-                      placeholder={"Hora de Abertura"}
-                      type={"time"}
-                      id={"name"}
-                      className="text-xs rounded-2xl justify-end"
-                      // register={register}
-                    />
-                  </div>
-                </div>
-              </div>
-
               <div className="w-full flex my-1 mx-1 px-2 py-1 justify-end items-baseline">
                 <p className="flex gap-1 items-center text-xs text-black mr-2">
                   <IoTimeOutline /> {currentTime.toLocaleString()}
@@ -301,12 +356,13 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
                   type="submit"
                   variant="default"
                   size="default"
+                  onSubmit={handleSubmit(onSubmit)}
                 >
                   Editar
                 </Button>
               </div>
             </form>
-          </>
+          )
         }
         footer={<></>}
       />

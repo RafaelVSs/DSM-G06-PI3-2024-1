@@ -1349,9 +1349,6 @@ video {
   .h-2\.5 {
   height: 0.625rem;
 }
-  .h-20 {
-  height: 5rem;
-}
   .h-3 {
   height: 0.75rem;
 }
@@ -1439,11 +1436,11 @@ video {
   .w-\[150\%\] {
   width: 150%;
 }
-  .w-\[46\%\] {
-  width: 46%;
-}
   .w-\[80\%\] {
   width: 80%;
+}
+  .w-\[90\%\] {
+  width: 90%;
 }
   .w-\[95\%\] {
   width: 95%;
@@ -1512,6 +1509,9 @@ video {
 }
   .gap-2 {
   gap: 0.5rem;
+}
+  .gap-4 {
+  gap: 1rem;
 }
   .space-x-1 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
@@ -1694,6 +1694,9 @@ video {
 }
   .text-left {
   text-align: left;
+}
+  .text-center {
+  text-align: center;
 }
   .text-right {
   text-align: right;
