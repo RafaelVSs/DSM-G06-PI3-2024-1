@@ -113,7 +113,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (!isModalOpen) {
+    if (!isModalOpen || !isEditModalOpen) {
       fetchTickets();
     }
   }, [isModalOpen]);

@@ -144,13 +144,17 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
 
     console.log("Form data to be submitted:", data);
 
-    // try {
-    //   const response = await axios.put(`http://localhost:8080/ticket/${ticketId}`, data);
-    //   console.log("Form data updated successfully:", response.data);
-    //   onClose();
-    // } catch (error) {
-    //   console.error("Error updating form data:", error);
-    // }
+    try {
+      const response = await axios.put(`http://localhost:8080/ticket/${ticketId}`, data);
+      console.log("Form data updated successfully:", response.data);
+      onClose();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Axios error updating form data:", error.response?.data);
+      } else {
+        console.error("Unexpected error updating form data:", error);
+      }
+    }
   };
 
   const handleClose = () => {
