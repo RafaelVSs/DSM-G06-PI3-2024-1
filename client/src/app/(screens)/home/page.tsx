@@ -12,7 +12,8 @@ import AddTicketModal from "@/components/modals/addTicketModal";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { IoTimeOutline } from "react-icons/io5";
-import { toast, Bounce } from 'react-toastify';
+import { toast, Bounce } from "react-toastify";
+import { ThreeCircles } from "react-loader-spinner";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 
@@ -39,11 +40,14 @@ interface Categoria {
 
 export default function Home() {
   // VARIÁVEIS
-  const [categorias, setCategorias] = useState<{ [key: string]: Categoria }>({});
+  const [categorias, setCategorias] = useState<{ [key: string]: Categoria }>(
+    {}
+  );
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [salas, setSalas] = useState<{ [key: string]: Sala }>({});
   const [currentTime, setCurrentTime] = useState(new Date());
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -68,6 +72,7 @@ export default function Home() {
 
   // REQUISIÇÃO GET
   const fetchTickets = async () => {
+    setIsLoading(true);
     try {
       const nomeAnalista = localStorage.getItem("nomeAnalista");
 
@@ -112,9 +117,9 @@ export default function Home() {
         }
       }
     } catch (error) {
-      toast.error('Erro ao buscar tickets do usuário!', {
+      toast.error("Erro ao buscar tickets do usuário!", {
         position: "bottom-center",
-        autoClose: 50000,
+        autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
@@ -122,9 +127,10 @@ export default function Home() {
         progress: undefined,
         theme: "colored",
         transition: Bounce,
-        });
+      });
       console.error("Error fetching tickets:", error);
     }
+    setIsLoading(false);
   };
 
   // USEEFFECT
@@ -146,7 +152,6 @@ export default function Home() {
     }
   }, [isModalOpen, isEditModalOpen]);
 
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[#4677da] bg-cover bg-center">
       <Header />
@@ -167,33 +172,63 @@ export default function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tickets.map((ticket) => {
-              const sala = salas[ticket.nomeSala];
-              const categoria = categorias[ticket.tipoProblema];
-              return (
-                <TableRow key={ticket._id}>
-                  <TableCell className="font-medium">{ticket._id}</TableCell>
-                  <TableCell>{sala?.localSala}</TableCell>
-                  <TableCell>{sala?.nome}</TableCell>
-                  <TableCell>{categoria?.tipoProblema}</TableCell>
-                  <TableCell>
-                    {new Date(ticket.dataAbertura).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {ticket.dataAtualizacao
-                      ? new Date(ticket.dataAtualizacao).toLocaleDateString()
-                      : "--/--/----"}
-                  </TableCell>
-                  <TableCell>{ticket.status}</TableCell>
-                  <TableCell
-                    className="flex justify-end cursor-pointer"
-                    onClick={() => openEditModal(ticket._id)}
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="justify-center items-center h-[200px]"
                   >
-                    Editar&#160; &#9998;
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                  <div className="flex justify-center m-3">
+                    <ThreeCircles
+                      visible={true}
+                      height="100"
+                      width="100"
+                      outerCircleColor="#3e8721"
+                      innerCircleColor="#11507a"
+                      middleCircleColor="#3e8721"
+                      ariaLabel="three-circles-loading"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              tickets
+                .slice()
+                .reverse()
+                .map((ticket) => {
+                  const sala = salas[ticket.nomeSala];
+                  const categoria = categorias[ticket.tipoProblema];
+                  return (
+                    <TableRow key={ticket._id}>
+                      <TableCell className="font-medium">
+                        {ticket._id}
+                      </TableCell>
+                      <TableCell>{sala?.localSala}</TableCell>
+                      <TableCell>{sala?.nome}</TableCell>
+                      <TableCell>{categoria?.tipoProblema}</TableCell>
+                      <TableCell>
+                        {new Date(ticket.dataAbertura).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {ticket.dataAtualizacao
+                          ? new Date(
+                              ticket.dataAtualizacao
+                            ).toLocaleDateString()
+                          : "--/--/----"}
+                      </TableCell>
+                      <TableCell>{ticket.status}</TableCell>
+                      <TableCell
+                        className="flex justify-end cursor-pointer"
+                        onClick={() => openEditModal(ticket._id)}
+                      >
+                        Editar&#160; &#9998;
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+            )}
           </TableBody>
         </Table>
       </div>
