@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { toast, Bounce } from 'react-toastify';
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import Footer from "../components/footer";
@@ -37,14 +38,47 @@ export default function App() {
         // Guardar informações de login no localStorage
         localStorage.setItem("nomeAnalista", foundAnalista.nome);
         localStorage.setItem("localAnalista", foundAnalista.localAnalista);
-        setMessage("Login bem-sucedido!");
+        toast.success('Login realizado com sucesso!', {
+          position: "bottom-center",
+          autoClose: 50000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          });
+        // setMessage("Login bem-sucedido!");
         window.location.href = "/home";
       } else {
-        setMessage("Usuário ou senha incorretos");
+        toast.error('Usuário ou senha incorretos!', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          });
+        // setMessage("Usuário ou senha incorretos");
       }
     } catch (error) {
-      console.error("Erro na requisição:", error);
-      setMessage("Ocorreu um erro ao fazer login");
+      toast.error('Ocorreu um erro ao fazer login!', {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
+      // console.error("Erro na requisição:", error);
+      // setMessage("Ocorreu um erro ao fazer login");
     }
   };
 

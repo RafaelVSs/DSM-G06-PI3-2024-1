@@ -12,6 +12,7 @@ import AddTicketModal from "@/components/modals/addTicketModal";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { IoTimeOutline } from "react-icons/io5";
+import { toast, Bounce } from 'react-toastify';
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 
@@ -111,6 +112,17 @@ export default function Home() {
         }
       }
     } catch (error) {
+      toast.error('Erro ao buscar tickets do usuário!', {
+        position: "bottom-center",
+        autoClose: 50000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
       console.error("Error fetching tickets:", error);
     }
   };

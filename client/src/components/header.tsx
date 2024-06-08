@@ -1,4 +1,5 @@
 'use client'
+import { toast, Bounce } from 'react-toastify';
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import Image from "next/image";
@@ -13,6 +14,17 @@ function Header() {
     if (nomeAnalista && localAnalista) {
       setUser({ nome: nomeAnalista, localAnalista });
     } else {
+      toast.error('Informações de Usuário nao encontradas!', {
+        position: "bottom-center",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
       console.error('Dados do analista não encontrados no armazenamento local.');
     }
   }, []);

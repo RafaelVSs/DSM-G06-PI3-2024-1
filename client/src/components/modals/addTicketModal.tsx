@@ -11,6 +11,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { IoTimeOutline } from "react-icons/io5";
 import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
+import { toast, Bounce } from "react-toastify";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import Modal from "./index";
@@ -105,7 +106,31 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
       });
 
       onClose();
+
+      toast.success('Ticket cadastrado com sucesso!', {
+        position: "bottom-center",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
+
     } catch (error) {
+      toast.error('Erro ao cadastrar Ticket!', {
+        position: "bottom-center",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
       console.error("Error submitting form data:", error);
     }
     //console de teste
