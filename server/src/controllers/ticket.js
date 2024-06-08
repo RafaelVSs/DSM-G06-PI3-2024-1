@@ -18,16 +18,15 @@ controller.create = async (req, res) => {
 
 controller.retrieveAll = async function(req, res) {
     try {
-        const query = Ticket.find().sort({data: 1}); //Mostra os tickets ordenados por data
+        const query = Ticket.find().sort({data: 1}); 
         const result = await query.exec()
         if (result) {
-            res.send(result); // Envia os tickets ordenados como resposta
+            res.send(result); 
         } else {
-            res.status(404).send('Nenhum ticket encontrado'); // Envia uma mensagem se não houver tickets
+            res.status(404).send('Nenhum ticket encontrado'); 
         }
     } catch (error) {
         console.error(error)
-        // HTTP 500: Internal Server Error
         res.status(500).end()
     }
 };
@@ -43,42 +42,68 @@ controller.retrieveOneId = async function(req, res) {
 
         const result = await query.exec()
 
-        // Documento encontrado ~> HTTP 200: OK (implícito)
-        if(result) res.send(result)
-        // Documento não encontrado ~> HTTP 404: Not Found
-        else res.status(404).end()         
+        if (result) {
+            res.send(result); 
+        } else {
+            res.status(404).send('Nenhum ticket encontrado'); 
+        }         
     } 
     catch (error) {
         console.error(error);
-        // HTTP 500: Internal Server Error
+
         res.status(500).end();
     } 
 };
 
 controller.update = async function(req, res) {
     try {
-        const result = await Ticket.findById(req.params.id);
-        
-        if (result) {
-            // Lógica para concatenar a descrição antiga com a nova
-            const novaDescrição = `${result.descrição}\n${req.body.descrição}`;
-
-            await Ticket.findByIdAndUpdate(req.params.id, { descrição: novaDescrição });
-            res.status(204).end();
+        const ticket = await Ticket.findById(req.params.id);
+  
+        if (!ticket) {
+            return res.status(404).json({ error: 'Ticket não encontrado' });
         } else {
-            res.status(404).end();
-        } 
+            if (req.body.nomeSala) {
+                ticket.nomeSala = req.body.nomeSala;
+            }
+    
+            if (req.body.solicitante) {
+                ticket.solicitante = req.body.solicitante;
+            }
+    
+            if (req.body.descrição) {
+                ticket.descrição = `${ticket.descrição}\\n${req.body.descrição}`;
+            }
+            
+            if (req.body.dataAtualizacao) {
+                ticket.dataAtualizacao = req.body.dataAtualizacao;
+            }
+          
+            if (req.body.status) {
+                ticket.status = req.body.status;
+            }
+    
+            if (req.body.tipoProblema) {
+                ticket.tipoProblema = req.body.tipoProblema;
+            }
+        }
+
+        
+
+        await ticket.save();
+  
+        res.status(200).json(ticket);
+
     } catch (error) {
-        console.error(error);
-        res.status(500).end();
+        console.error('Erro ao atualizar o ticket:', error);
+        es.status(500).json({ error: 'Erro interno do servidor' });
     }
-};
+  };
 
 
 controller.delete = async function(req, res) {
     try {
         const result = await Ticket.findByIdAndDelete(req.params.id)    
-        if(result) res.status(204).end()
+        if(result) res.status(200).send('Ticket excluído com sucesso').end()
         else res.status(404).end()
     }
     catch (error) {
