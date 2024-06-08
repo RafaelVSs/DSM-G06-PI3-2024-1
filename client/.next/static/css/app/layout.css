@@ -1313,6 +1313,9 @@ video {
   .mt-5 {
   margin-top: 1.25rem;
 }
+  .mb-4 {
+  margin-bottom: 1rem;
+}
   .flex {
   display: flex;
 }
@@ -1348,9 +1351,6 @@ video {
 }
   .h-2\.5 {
   height: 0.625rem;
-}
-  .h-20 {
-  height: 5rem;
 }
   .h-3 {
   height: 0.75rem;
@@ -1439,9 +1439,6 @@ video {
   .w-\[150\%\] {
   width: 150%;
 }
-  .w-\[46\%\] {
-  width: 46%;
-}
   .w-\[80\%\] {
   width: 80%;
 }
@@ -1456,6 +1453,9 @@ video {
 }
   .w-full {
   width: 100%;
+}
+  .w-\[30\%\] {
+  width: 30%;
 }
   .min-w-\[8rem\] {
   min-width: 8rem;
@@ -1489,6 +1489,9 @@ video {
   .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+  .flex-row {
+  flex-direction: row;
+}
   .flex-col {
   flex-direction: column;
 }
@@ -1519,10 +1522,18 @@ video {
   .gap-4 {
   gap: 1rem;
 }
+  .gap-3 {
+  gap: 0.75rem;
+}
   .space-x-1 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(0.25rem * var(--tw-space-x-reverse));
   margin-left: calc(0.25rem * calc(1 - var(--tw-space-x-reverse)));
+}
+  .space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
   .overflow-auto {
   overflow: auto;
@@ -1621,6 +1632,14 @@ video {
   .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+  .bg-blue-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
+}
+  .bg-\[\#0485d1\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(4 133 209 / var(--tw-bg-opacity));
 }
   .bg-\[url\(\'\/img\/sean-pollock-PhYq704ffdA-unsplash\.jpg\'\)\] {
   background-image: url('/img/sean-pollock-PhYq704ffdA-unsplash.jpg');

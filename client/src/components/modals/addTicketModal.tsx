@@ -229,7 +229,8 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
                       placeholder={"Analista"}
                       type={"text"}
                       id={"analista"}
-                      className="text-x rounded-2xl"
+                      disabled
+                      className="text-x rounded-2xl cursor-default"
                       {...register("analista")}
                       onChange={(e) => setValue("analista", e.target.value)} // Chama setValue no evento de mudança
                     />

@@ -1,4 +1,3 @@
-"use client";
 import {
   Select,
   SelectContent,
@@ -12,9 +11,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "./index";
-import React from "react";
 import axios from "axios";
 
 type EditTicketModalProps = {
@@ -53,95 +51,123 @@ type FormData = {
   dataAtualizacao?: string;
 };
 
-const EditTicketModal: React.FC<EditTicketModalProps> = ({ isOpen, onClose, ticketId }) => {
+const EditTicketModal: React.FC<EditTicketModalProps> = ({
+  isOpen,
+  onClose,
+  ticketId,
+}) => {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(false);
   const [salas, setSalas] = useState<Sala[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [analistas, setAnalistas] = useState<Analista[]>([]);
-  const { register, handleSubmit, setValue, reset } = useForm<FormData>();
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+  const { register, handleSubmit, setValue, reset, watch } =
+    useForm<FormData>();
 
   useEffect(() => {
     if (isOpen) {
-      // Fetch data for salas, categorias, and analistas
+      setIsLoading(true); // Start loading
+
       Promise.all([
         fetch("http://localhost:8080/sala").then((response) => response.json()),
-        fetch("http://localhost:8080/categoria").then((response) => response.json()),
-        fetch("http://localhost:8080/analista").then((response) => response.json())
+        fetch("http://localhost:8080/categoria").then((response) =>
+          response.json()
+        ),
+        fetch("http://localhost:8080/analista").then((response) =>
+          response.json()
+        ),
       ])
-      .then(([salasData, categoriasData, analistasData]) => {
-        setSalas(salasData);
-        setCategorias(categoriasData);
-        setAnalistas(analistasData);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
-  
-      // Fetch the ticket data when the modal opens
-      if (ticketId) {
-        axios.get(`http://localhost:8080/ticket/${ticketId}`)
-          .then((response) => {
-            const ticketData = response.data;
-            setValue("solicitante", ticketData.solicitante);
-            setValue("descrição", ticketData.descrição);
-            setValue("status", ticketData.status);
-            setValue("nomeSala", ticketData.nomeSala);
-            setValue("tipoProblema", ticketData.tipoProblema);
-  
-            // Find and set the analista name from the ticket data
-            const analistaId = ticketData.analista;
-            const analistaName = analistas.find((a) => a._id === analistaId)?.nome || "";
-            setValue("analista", analistaName);
-          })
-          .catch((error) => console.error("Error fetching ticket data:", error));
-      }
+        .then(([salasData, categoriasData, analistasData]) => {
+          setSalas(salasData);
+          setCategorias(categoriasData);
+          setAnalistas(analistasData);
+          setDataLoaded(true);
+
+          if (ticketId) {
+            axios
+              .get(`http://localhost:8080/ticket/${ticketId}`)
+              .then((response) => {
+                const ticketData = response.data;
+                setValue("solicitante", ticketData.solicitante);
+                setValue("descrição", ticketData.descrição);
+                setValue("status", ticketData.status);
+                setValue("nomeSala", ticketData.nomeSala);
+                setValue("tipoProblema", ticketData.tipoProblema);
+
+                const analistaId = ticketData.analista;
+                const analista = analistasData.find(
+                  (a: Analista) => a._id === analistaId
+                );
+                if (analista) {
+                  setValue("analista", analista.nome);
+                }
+
+                setIsLoading(false); // End loading after fetching ticket data
+              })
+              .catch((error) => {
+                console.error("Error fetching ticket data:", error);
+                setIsLoading(false); // End loading even if there's an error
+              });
+          } else {
+            setIsLoading(false); // End loading if no ticketId
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+          setIsLoading(false); // End loading if there's an error
+        });
     }
-  }, [isOpen, ticketId, setValue, analistas]);
+  }, [isOpen, ticketId, setValue]);
 
   useEffect(() => {
-    const intervalID = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
+    if (isOpen) {
+      const intervalID = setInterval(() => {
+        setCurrentTime(new Date());
+      }, 1000);
 
-    return () => clearInterval(intervalID);
+      return () => clearInterval(intervalID);
+    }
   }, [isOpen]);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    if (data.status === "Fechado") {
-      data.dataAtualizacao = new Date().toISOString();
-    } else {
-      delete data.dataAtualizacao;
-    }
+    data.dataAtualizacao = new Date().toISOString();
 
-    // Find the analista by name
-    const analista = analistas.find((analista) => analista.nome === data.analista);
+    const analista = analistas.find(
+      (analista) => analista.nome === data.analista
+    );
     if (analista) {
       data.analista = analista._id;
     } else {
       data.analista = "";
     }
 
-    try {
-      const response = await axios.put(`http://localhost:8080/ticket/${ticketId}`, data);
-      console.log("Form data updated successfully:", response.data);
-      onClose();
-    } catch (error) {
-      console.error("Error updating form data:", error);
-    }
+    console.log("Form data to be submitted:", data);
+
+    // try {
+    //   const response = await axios.put(`http://localhost:8080/ticket/${ticketId}`, data);
+    //   console.log("Form data updated successfully:", response.data);
+    //   onClose();
+    // } catch (error) {
+    //   console.error("Error updating form data:", error);
+    // }
   };
 
   const handleClose = () => {
     reset();
     onClose();
+    setDataLoaded(false);
   };
 
   const handleSalaChange = (value: string) => {
-    const sala = salas.find((sala) => sala.nome === value);
+    const sala = salas.find((sala) => sala._id === value);
     if (sala) {
       setValue("nomeSala", sala._id);
     }
   };
 
   const handleTipoProblemaChange = (value: string) => {
-    const categoria = categorias.find((categoria) => categoria.tipoProblema === value);
+    const categoria = categorias.find((categoria) => categoria._id === value);
     if (categoria) {
       setValue("tipoProblema", categoria._id);
     }
@@ -150,6 +176,11 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({ isOpen, onClose, tick
   const handleStatusChange = (value: string) => {
     setValue("status", value);
   };
+
+  const watchedNomeSala = watch("nomeSala");
+  const watchedTipoProblema = watch("tipoProblema");
+  const watchedStatus = watch("status");
+  const watchedAnalista = watch("analista");
 
   return (
     <>
@@ -168,7 +199,11 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({ isOpen, onClose, tick
           </div>
         }
         body={
-          <>
+          isLoading ? (
+            <div className="flex justify-center items-center h-full">
+              <p>Loading...</p>
+            </div>
+          ) : (
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="flex mx-1 px-2 py-1 rounded-xl justify-between gap-4">
                 <div className="flex w-[90%] flex-col">
@@ -176,13 +211,16 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({ isOpen, onClose, tick
                     Sala
                   </label>
                   <div className="w-full h-12 m-0">
-                    <Select onValueChange={handleSalaChange}>
+                    <Select
+                      value={watchedNomeSala}
+                      onValueChange={handleSalaChange}
+                    >
                       <SelectTrigger className="w-full text-xs">
                         <SelectValue placeholder="Sala" />
                       </SelectTrigger>
                       <SelectContent>
                         {salas.map((sala) => (
-                          <SelectItem key={sala._id} value={sala.nome}>
+                          <SelectItem key={sala._id} value={sala._id}>
                             {sala.nome}
                           </SelectItem>
                         ))}
@@ -200,26 +238,30 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({ isOpen, onClose, tick
                       placeholder={"Analista"}
                       type={"text"}
                       id={"analista"}
-                      className="text-x rounded-2xl"
+                      className="text-x rounded- cursor-default"
+                      disabled
+                      value={watchedAnalista}
                       {...register("analista")}
-                      onChange={(e) => setValue("analista", e.target.value)}
                     />
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col mx-1 px-2 py-1 rounded-xl">
-                <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-0.5">
+                <label className="text-sm md:text-sm lg:text-sm text-[#002f3f] ml-1 mb-1">
                   Tipo de Chamado
                 </label>
                 <div className="w-[100%] h-12 m-auto">
-                  <Select onValueChange={handleTipoProblemaChange}>
+                  <Select
+                    value={watchedTipoProblema}
+                    onValueChange={handleTipoProblemaChange}
+                  >
                     <SelectTrigger className="w-full text-xs">
                       <SelectValue placeholder="Tipo de problema" />
                     </SelectTrigger>
                     <SelectContent>
                       {categorias.map((categoria) => (
-                        <SelectItem key={categoria._id} value={categoria.tipoProblema}>
+                        <SelectItem key={categoria._id} value={categoria._id}>
                           {categoria.tipoProblema}
                         </SelectItem>
                       ))}
@@ -264,8 +306,8 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({ isOpen, onClose, tick
                 <div className="grid-cols-3 justify-between">
                   <RadioGroup
                     className="flex justify-center gap-2 md:gap-20 w-full"
+                    value={watchedStatus}
                     onValueChange={handleStatusChange}
-                    defaultValue={undefined}
                   >
                     <div className="flex items-center space-x-1 md:space-x-2">
                       <RadioGroupItem
@@ -316,7 +358,7 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({ isOpen, onClose, tick
                 </Button>
               </div>
             </form>
-          </>
+          )
         }
         footer={<></>}
       />
