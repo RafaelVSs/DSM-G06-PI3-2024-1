@@ -7,15 +7,15 @@ import {
   SelectValue,
 } from "../ui/select";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { IoTimeOutline } from "react-icons/io5";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { IoTimeOutline } from "react-icons/io5";
+import { useState, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { useState, useEffect } from "react";
 import Modal from "./index";
 import React from "react";
-import axios from "axios"; // Importando axios
+import axios from "axios";
 
 type AddTicketModalProps = {
   isOpen: boolean;
@@ -43,14 +43,16 @@ type FormData = {
   dataAbertura: string;
   status: string;
   analista: string;
-  dataAtualizacao?: string; // Opcional, só será enviado se o status for "Fechado"
+  dataAtualizacao?: string; // Torna opcional, só será enviado se o status for "Fechado"
 };
 
 const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
+  // VARIÁVEIS
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [salas, setSalas] = useState<Sala[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [analistas, setAnalistas] = useState<any[]>([]);
+  const [salas, setSalas] = useState<Sala[]>([]);
+
   const { register, handleSubmit, setValue, watch, reset } = useForm<FormData>({
     defaultValues: {
       solicitante: "",
@@ -63,6 +65,92 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
     },
   });
 
+  // FUNÇÕES
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    data.dataAbertura = new Date().toISOString();
+
+    // Encontra o analista correspondente pelo nome e obtém o ID
+    const analista = analistas.find(
+      (analista) => analista.nome === data.analista
+    );
+
+    if (analista) {
+      data.analista = analista._id; // Converte o nome do analista para o ID
+    } else {
+      data.analista = "";
+    }
+
+    if (data.status === "Fechado") {
+      data.dataAtualizacao = new Date().toISOString();
+    } else {
+      delete data.dataAtualizacao;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8080/ticket", data);
+      console.log("Form data submitted successfully:", response.data);
+
+      // Após enviar o ticket, restaura o nome do analista no formulário
+      const nomeAnalista = analista ? analista.nome : "";
+
+      // Reseta o formulário e restaura o nome do analista
+      reset({
+        solicitante: "",
+        nomeSala: "",
+        tipoProblema: "",
+        descrição: "",
+        dataAbertura: "",
+        status: "",
+        analista: nomeAnalista, // Restaurar o nome do analista após o reset
+      });
+
+      onClose();
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+    }
+    //console de teste
+    console.log("ticket: ", data);
+  };
+
+  const handleClose = () => {
+    // Mantém o campo analista
+    const nomeAnalista = watch("analista");
+
+    // Reseta o formulário e define o campo analista novamente
+    reset({
+      solicitante: "",
+      nomeSala: "",
+      tipoProblema: "",
+      descrição: "",
+      dataAbertura: "",
+      status: "",
+      analista: nomeAnalista, // Restaurar o nome do analista após o reset
+    });
+
+    onClose();
+  };
+
+  const handleSalaChange = (value: string) => {
+    const sala = salas.find((sala) => sala.nome === value);
+    if (sala) {
+      setValue("nomeSala", sala._id);
+    }
+  };
+
+  const handleTipoProblemaChange = (value: string) => {
+    const categoria = categorias.find(
+      (categoria) => categoria.tipoProblema === value
+    );
+    if (categoria) {
+      setValue("tipoProblema", categoria._id);
+    }
+  };
+
+  const handleStatusChange = (value: string) => {
+    setValue("status", value);
+  };
+
+  // USEEFFECT
   useEffect(() => {
     if (isOpen) {
       fetch("http://localhost:8080/sala")
@@ -96,89 +184,6 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
 
     return () => clearInterval(intervalID);
   }, [isOpen]);
-
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    data.dataAbertura = new Date().toISOString();
-
-    // Encontre o analista correspondente pelo nome e obtenha o ID
-    const analista = analistas.find(
-      (analista) => analista.nome === data.analista
-    );
-
-    if (analista) {
-      data.analista = analista._id; // Converta o nome do analista para o ID para enviar ao backend
-    } else {
-      data.analista = "";
-    }
-
-    if (data.status === "Fechado") {
-      data.dataAtualizacao = new Date().toISOString();
-    } else {
-      delete data.dataAtualizacao;
-    }
-
-    try {
-      const response = await axios.post("http://localhost:8080/ticket", data);
-      console.log("Form data submitted successfully:", response.data);
-
-      // Após enviar o ticket, restaure o nome do analista no formulário
-      const nomeAnalista = analista ? analista.nome : "";
-
-      // Resete o formulário e restaure o nome do analista
-      reset({
-        solicitante: "",
-        nomeSala: "",
-        tipoProblema: "",
-        descrição: "",
-        dataAbertura: "",
-        status: "",
-        analista: nomeAnalista, // Restaurar o nome do analista após o reset
-      });
-
-      onClose();
-    } catch (error) {
-      console.error("Error submitting form data:", error);
-    }
-    console.log("ticket: ", data);
-  };
-
-  const handleClose = () => {
-    // Preserve o valor do campo analista
-    const nomeAnalista = watch("analista");
-
-    // Resete o formulário e defina o campo analista novamente
-    reset({
-      solicitante: "",
-      nomeSala: "",
-      tipoProblema: "",
-      descrição: "",
-      dataAbertura: "",
-      status: "",
-      analista: nomeAnalista, // Restaurar o nome do analista após o reset
-    });
-
-    onClose();
-  };
-
-  const handleSalaChange = (value: string) => {
-    const sala = salas.find((sala) => sala.nome === value);
-    if (sala) {
-      setValue("nomeSala", sala._id);
-    }
-  };
-
-  const handleTipoProblemaChange = (value: string) => {
-    const categoria = categorias.find(
-      (categoria) => categoria.tipoProblema === value
-    );
-    if (categoria) {
-      setValue("tipoProblema", categoria._id);
-    }
-  };
-
-  const handleStatusChange = (value: string) => {
-    setValue("status", value);
-  };
 
   return (
     <>

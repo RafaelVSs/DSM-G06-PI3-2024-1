@@ -24,32 +24,48 @@ interface Ticket {
   dataAbertura: string;
   status: string;
   tipoProblema: string;
-  dataAtualizacao?: string; // Tornando opcional
+  dataAtualizacao?: string;
 }
-
 interface Sala {
   _id: string;
   nome: string;
   localSala: string;
 }
-
 interface Categoria {
   _id: string;
   tipoProblema: string;
 }
 
 export default function Home() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [salas, setSalas] = useState<{ [key: string]: Sala }>({});
-  const [categorias, setCategorias] = useState<{ [key: string]: Categoria }>(
-    {}
-  );
-  const [currentTime, setCurrentTime] = useState(new Date());
+  // VARIÁVEIS
+  const [categorias, setCategorias] = useState<{ [key: string]: Categoria }>({});
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [salas, setSalas] = useState<{ [key: string]: Sala }>({});
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [tickets, setTickets] = useState<Ticket[]>([]);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // FUNÇÕES
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const openEditModal = (ticketId: string) => {
+    setSelectedTicketId(ticketId);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  // REQUISIÇÃO GET
   const fetchTickets = async () => {
     try {
       const nomeAnalista = localStorage.getItem("nomeAnalista");
@@ -99,6 +115,7 @@ export default function Home() {
     }
   };
 
+  // USEEFFECT
   useEffect(() => {
     const intervalID = setInterval(() => {
       setCurrentTime(new Date());
@@ -117,22 +134,6 @@ export default function Home() {
     }
   }, [isModalOpen, isEditModalOpen]);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const openEditModal = (ticketId: string) => {
-    setSelectedTicketId(ticketId);
-    setIsEditModalOpen(true);
-  };
-
-  const closeEditModal = () => {
-    setIsEditModalOpen(false);
-  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[#4677da] bg-cover bg-center">

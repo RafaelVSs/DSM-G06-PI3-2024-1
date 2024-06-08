@@ -1,8 +1,8 @@
-'use client'
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Footer from "../components/footer";
 import { useState, useEffect } from "react";
+import Footer from "../components/footer";
 import Image from "next/image";
 import axios from "axios";
 import React from "react";
@@ -17,18 +17,12 @@ interface Analista {
 }
 
 export default function App() {
-  const [email, setEmail] = useState("");
+  //VARIÁVEIS
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    // Verificar se há informações de login no localStorage e preencher o campo de email
-    const storedEmail = localStorage.getItem('email');
-    if (storedEmail) {
-      setEmail(storedEmail);
-    }
-  }, []);
-
+  //REQUISIÇÃO GET
   const handleLogin = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/analista/`);
@@ -41,8 +35,8 @@ export default function App() {
 
       if (foundAnalista) {
         // Guardar informações de login no localStorage
-        localStorage.setItem('nomeAnalista', foundAnalista.nome);
-        localStorage.setItem('localAnalista', foundAnalista.localAnalista);
+        localStorage.setItem("nomeAnalista", foundAnalista.nome);
+        localStorage.setItem("localAnalista", foundAnalista.localAnalista);
         setMessage("Login bem-sucedido!");
         window.location.href = "/home";
       } else {
@@ -53,6 +47,15 @@ export default function App() {
       setMessage("Ocorreu um erro ao fazer login");
     }
   };
+
+  // USEEFFECT
+  useEffect(() => {
+    // Verificar se há informações de login no localStorage e preencher o campo de email
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[url('/img/sean-pollock-PhYq704ffdA-unsplash.jpg')] bg-cover bg-center">
