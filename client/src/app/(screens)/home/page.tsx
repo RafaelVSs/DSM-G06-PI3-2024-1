@@ -45,7 +45,6 @@ export default function Home() {
     {}
   );
   const [currentTime, setCurrentTime] = useState(new Date());
-  // const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -116,7 +115,7 @@ export default function Home() {
     if (!isModalOpen || !isEditModalOpen) {
       fetchTickets();
     }
-  }, [isModalOpen]);
+  }, [isModalOpen, isEditModalOpen]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -130,9 +129,6 @@ export default function Home() {
     setSelectedTicketId(ticketId);
     setIsEditModalOpen(true);
   };
-  // const openEditModal = () => {
-  //   setIsEditModalOpen(true);
-  // };
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
@@ -178,7 +174,7 @@ export default function Home() {
                   <TableCell>{ticket.status}</TableCell>
                   <TableCell
                     className="flex justify-end cursor-pointer"
-                    onClick={() => openEditModal(ticket._id)} // Passa o ID do ticket aqui
+                    onClick={() => openEditModal(ticket._id)}
                   >
                     Editar&#160; &#9998;
                   </TableCell>
@@ -206,7 +202,7 @@ export default function Home() {
         <AddTicketModal isOpen={isModalOpen} onClose={closeModal} />
         <EditTicketModal
           isOpen={isEditModalOpen}
-          onClose={() => setIsEditModalOpen(false)}
+          onClose={closeEditModal}
           ticketId={selectedTicketId ? selectedTicketId : ""}
         />
       </div>

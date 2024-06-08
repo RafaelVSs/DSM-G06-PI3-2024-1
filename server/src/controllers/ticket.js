@@ -71,7 +71,7 @@ controller.update = async function(req, res) {
             }
     
             if (req.body.descrição) {
-                ticket.descrição = `${ticket.descrição}\\n${req.body.descrição}`;
+                ticket.descrição = req.body.descrição;
             }
             
             if (req.body.dataAtualizacao) {
