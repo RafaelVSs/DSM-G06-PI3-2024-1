@@ -7,7 +7,7 @@ controller.create = async (req, res) => {
       const ticket = req.body;
 
       // Converter a string de data em um objeto Date:
-      ticket.data = new Date(ticket.data); // Adicione esta linha
+      ticket.data = new Date(ticket.data);
 
       const ticketCriado = await Ticket.create(ticket);
       res.status(201).json(ticketCriado);
@@ -108,7 +108,6 @@ controller.delete = async function(req, res) {
     }
     catch (error) {
         console.error(error)
-        // HTTP 500: Internal Server Error
         res.status(500).end()
     }
 

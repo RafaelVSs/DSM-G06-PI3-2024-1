@@ -4,7 +4,7 @@ const controller = {};
 
 controller.create = async function(req, res) {
     try {
-        await Categoria.create(req.body); //Cria uma nova categoria 
+        await Categoria.create(req.body);
 
         res.status(201).end();
     } catch (error) {

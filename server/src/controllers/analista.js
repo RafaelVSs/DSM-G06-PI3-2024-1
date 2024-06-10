@@ -4,9 +4,9 @@ const controller = {};
 
 controller.create = async function(req, res) {
     try {
-        await Analista.create(req.body); //Cria um novo analista
+        await Analista.create(req.body); 
 
-        res.status(201).end();
+        res.status(201).send("Analista criado").end();
     } catch (error) {    
         console.error(error);  
 
@@ -16,10 +16,10 @@ controller.create = async function(req, res) {
 
 controller.retrieveOneEmail = async function(req, res) {
     try {
-        const emailParaBuscar = req.params.email.toLowerCase(); // Converte para minúsculas
+        const emailParaBuscar = req.params.email.toLowerCase();
         
-        const result = await Analista.find({ email: emailParaBuscar }); // Torna a consulta insensível a maiúsculas e minúsculas
-        if (result) { // Verifica se resultados foram encontrados
+        const result = await Analista.find({ email: emailParaBuscar });
+        if (result) { 
           res.send(result);
         } else {
           res.status(404).end();
@@ -50,7 +50,7 @@ controller.update = async function(req, res) {
         const result = await Analista.findById(req.params.id);
         if (result) {
             await Analista.findByIdAndUpdate(req.params.id, req.body);
-            res.status(204).end();
+            res.status(200).json(result).end();
         } else {
             res.status(404).end();
         }
@@ -64,7 +64,7 @@ controller.delete = async function(req, res) {
     try {
         const result = await Analista.findByIdAndDelete(req.params.id);
         if (result) {
-            res.status(204).end();
+            res.status(204).send("Analista excluído").end();
         } else {
             res.status(404).end();
         }
