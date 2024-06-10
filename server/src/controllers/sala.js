@@ -6,7 +6,7 @@ controller.create = async function(req, res) {
     try {
         await Sala.create(req.body);
 
-        res.status(201).end();
+        res.status(201).send("Sala criada com sucesso!").end();
     } catch (error) {
         console.error(error);   
 
@@ -20,7 +20,7 @@ controller.retrieveAll = async function(req, res) {
         if (result) {
             res.send(result);
         } else {
-            res.status(404).end();
+            res.status(404).send("Nenhuma sala encontrada!").end();
         }
     } catch (error) {
         console.error(error);
@@ -34,7 +34,7 @@ controller.retrieveOneId = async function(req, res) {
         if (result) {
             res.send(result);
         } else {
-            res.status(404).end();
+            res.status(404).send("Sala não encontrada!").end();
         }
     } catch (error) {
         console.error(error);
@@ -46,9 +46,9 @@ controller.delete = async function(req, res) {
     try {
         const result = await Sala.findByIdAndDelete(req.params.id)
         if (result) {
-            res.status(204).end();
+            res.status(200).send("Sala excluída com sucesso!").end();
         } else {
-            res.status(404).end();
+            res.status(404).send("Sala não encontrada!").end();
         }
     } catch (error) {
         console.error(error);

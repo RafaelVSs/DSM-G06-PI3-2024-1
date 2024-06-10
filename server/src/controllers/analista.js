@@ -6,7 +6,7 @@ controller.create = async function(req, res) {
     try {
         await Analista.create(req.body); 
 
-        res.status(201).send("Analista criado").end();
+        res.status(201).send("Analista criado!").end();
     } catch (error) {    
         console.error(error);  
 
@@ -20,10 +20,10 @@ controller.retrieveOneEmail = async function(req, res) {
         
         const result = await Analista.find({ email: emailParaBuscar });
         if (result) { 
-          res.send(result);
+          res.status(200).send(result);
         } else {
-          res.status(404).end();
-          console.log(req.params.email);
+          res.status(404).send(`Email ${emailParaBuscar} não encontrado!`).end();
+
         }
       } catch (error) {
         console.error(error);
@@ -35,9 +35,9 @@ controller.retrieveAll = async function(req, res) {
     try {
         const result = await Analista.find();
         if (result) {
-            res.send(result);
+            res.status(200).send(result);
         } else {
-            res.status(404).end();
+            res.status(404).send("Nenhum analista encontrado").end();
         }
     } catch (error) {
         console.error(error);
@@ -50,9 +50,9 @@ controller.update = async function(req, res) {
         const result = await Analista.findById(req.params.id);
         if (result) {
             await Analista.findByIdAndUpdate(req.params.id, req.body);
-            res.status(200).json(result).end();
+            res.status(200).send("Analista atualizado com sucesso!").end();
         } else {
-            res.status(404).end();
+            res.status(404).send("Analista não encontrado!").end();
         }
     } catch (error) {    
         console.error(error);
@@ -64,9 +64,9 @@ controller.delete = async function(req, res) {
     try {
         const result = await Analista.findByIdAndDelete(req.params.id);
         if (result) {
-            res.status(204).send("Analista excluído").end();
+            res.status(200).send("Analista excluído!").end();
         } else {
-            res.status(404).end();
+            res.status(404).send("Analista não encontrado!").end();
         }
     } catch (error) {
         console.error(error);

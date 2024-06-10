@@ -45,7 +45,7 @@ controller.retrieveOneId = async function(req, res) {
         if (result) {
             res.send(result); 
         } else {
-            res.status(404).send('Nenhum ticket encontrado'); 
+            res.status(404).send('Ticket não encontrado!'); 
         }         
     } 
     catch (error) {
@@ -60,7 +60,7 @@ controller.update = async function(req, res) {
         const ticket = await Ticket.findById(req.params.id);
   
         if (!ticket) {
-            return res.status(404).json({ error: 'Ticket não encontrado' });
+            return res.status(404).json({ error: 'Ticket não encontrado!' });
         } else {
             if (req.body.nomeSala) {
                 ticket.nomeSala = req.body.nomeSala;
@@ -104,7 +104,7 @@ controller.delete = async function(req, res) {
     try {
         const result = await Ticket.findByIdAndDelete(req.params.id)    
         if(result) res.status(200).send('Ticket excluído com sucesso').end()
-        else res.status(404).end()
+        else res.status(404).send('Ticket não encontrado!').end()
     }
     catch (error) {
         console.error(error)

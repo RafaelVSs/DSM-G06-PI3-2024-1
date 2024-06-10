@@ -8,7 +8,6 @@ import app from "../app.js";
 import chalk from "chalk";
 import { createServer } from "http";
 
-
 /**
  * Get port from environment and store in Express.
  */
