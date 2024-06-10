@@ -9,9 +9,11 @@ import {
 } from "@/components/ui/table";
 import EditTicketModal from "@/components/modals/editTicketModal";
 import AddTicketModal from "@/components/modals/addTicketModal";
+import { ThreeCircles } from "react-loader-spinner";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { IoTimeOutline } from "react-icons/io5";
+import { toast, Bounce } from "react-toastify";
 import Footer from "@/components/footer";
 import Header from "@/components/header";
 
@@ -24,33 +26,53 @@ interface Ticket {
   dataAbertura: string;
   status: string;
   tipoProblema: string;
-  dataAtualizacao?: string; // Tornando opcional
+  dataAtualizacao?: string;
 }
-
 interface Sala {
   _id: string;
   nome: string;
   localSala: string;
 }
-
 interface Categoria {
   _id: string;
   tipoProblema: string;
 }
 
 export default function Home() {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [salas, setSalas] = useState<{ [key: string]: Sala }>({});
+  // VARIÁVEIS
   const [categorias, setCategorias] = useState<{ [key: string]: Categoria }>(
     {}
   );
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [salas, setSalas] = useState<{ [key: string]: Sala }>({});
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // FUNÇÕES
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const openEditModal = (ticketId: string) => {
+    setSelectedTicketId(ticketId);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  // REQUISIÇÃO GET
   const fetchTickets = async () => {
+    setIsLoading(true);
     try {
       const nomeAnalista = localStorage.getItem("nomeAnalista");
 
@@ -95,10 +117,23 @@ export default function Home() {
         }
       }
     } catch (error) {
+      toast.error("Erro ao buscar tickets do usuário!", {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
       console.error("Error fetching tickets:", error);
     }
+    setIsLoading(false);
   };
 
+  // USEEFFECT
   useEffect(() => {
     const intervalID = setInterval(() => {
       setCurrentTime(new Date());
@@ -116,23 +151,6 @@ export default function Home() {
       fetchTickets();
     }
   }, [isModalOpen, isEditModalOpen]);
-
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const openEditModal = (ticketId: string) => {
-    setSelectedTicketId(ticketId);
-    setIsEditModalOpen(true);
-  };
-
-  const closeEditModal = () => {
-    setIsEditModalOpen(false);
-  };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[#4677da] bg-cover bg-center">
@@ -154,33 +172,63 @@ export default function Home() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tickets.map((ticket) => {
-              const sala = salas[ticket.nomeSala];
-              const categoria = categorias[ticket.tipoProblema];
-              return (
-                <TableRow key={ticket._id}>
-                  <TableCell className="font-medium">{ticket._id}</TableCell>
-                  <TableCell>{sala?.localSala}</TableCell>
-                  <TableCell>{sala?.nome}</TableCell>
-                  <TableCell>{categoria?.tipoProblema}</TableCell>
-                  <TableCell>
-                    {new Date(ticket.dataAbertura).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    {ticket.dataAtualizacao
-                      ? new Date(ticket.dataAtualizacao).toLocaleDateString()
-                      : "--/--/----"}
-                  </TableCell>
-                  <TableCell>{ticket.status}</TableCell>
-                  <TableCell
-                    className="flex justify-end cursor-pointer"
-                    onClick={() => openEditModal(ticket._id)}
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={8}
+                  className="justify-center items-center h-[200px]"
                   >
-                    Editar&#160; &#9998;
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+                  <div className="flex justify-center m-3">
+                    <ThreeCircles
+                      visible={true}
+                      height="100"
+                      width="100"
+                      outerCircleColor="#3e8721"
+                      innerCircleColor="#11507a"
+                      middleCircleColor="#3e8721"
+                      ariaLabel="three-circles-loading"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              tickets
+                .slice()
+                .reverse()
+                .map((ticket) => {
+                  const sala = salas[ticket.nomeSala];
+                  const categoria = categorias[ticket.tipoProblema];
+                  return (
+                    <TableRow key={ticket._id}>
+                      <TableCell className="font-medium">
+                        {ticket._id}
+                      </TableCell>
+                      <TableCell>{sala?.localSala}</TableCell>
+                      <TableCell>{sala?.nome}</TableCell>
+                      <TableCell>{categoria?.tipoProblema}</TableCell>
+                      <TableCell>
+                        {new Date(ticket.dataAbertura).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {ticket.dataAtualizacao
+                          ? new Date(
+                              ticket.dataAtualizacao
+                            ).toLocaleDateString()
+                          : "--/--/----"}
+                      </TableCell>
+                      <TableCell>{ticket.status}</TableCell>
+                      <TableCell
+                        className="flex justify-end cursor-pointer"
+                        onClick={() => openEditModal(ticket._id)}
+                      >
+                        Editar&#160; &#9998;
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+            )}
           </TableBody>
         </Table>
       </div>

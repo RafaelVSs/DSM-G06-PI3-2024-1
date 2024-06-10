@@ -1,8 +1,9 @@
-'use client'
+"use client";
 import { Button } from "@/components/ui/button";
+import { toast, Bounce } from 'react-toastify';
 import { Input } from "@/components/ui/input";
-import Footer from "../components/footer";
 import { useState, useEffect } from "react";
+import Footer from "../components/footer";
 import Image from "next/image";
 import axios from "axios";
 import React from "react";
@@ -17,18 +18,12 @@ interface Analista {
 }
 
 export default function App() {
-  const [email, setEmail] = useState("");
+  //VARIÁVEIS
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    // Verificar se há informações de login no localStorage e preencher o campo de email
-    const storedEmail = localStorage.getItem('email');
-    if (storedEmail) {
-      setEmail(storedEmail);
-    }
-  }, []);
-
+  //REQUISIÇÃO GET
   const handleLogin = async () => {
     try {
       const response = await axios.get(`http://localhost:8080/analista/`);
@@ -41,18 +36,60 @@ export default function App() {
 
       if (foundAnalista) {
         // Guardar informações de login no localStorage
-        localStorage.setItem('nomeAnalista', foundAnalista.nome);
-        localStorage.setItem('localAnalista', foundAnalista.localAnalista);
-        setMessage("Login bem-sucedido!");
+        localStorage.setItem("nomeAnalista", foundAnalista.nome);
+        localStorage.setItem("localAnalista", foundAnalista.localAnalista);
+        toast.success('Login realizado com sucesso!', {
+          position: "bottom-center",
+          autoClose: 50000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          });
+        // setMessage("Login bem-sucedido!");
         window.location.href = "/home";
       } else {
-        setMessage("Usuário ou senha incorretos");
+        toast.error('Usuário ou senha incorretos!', {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+          });
+        // setMessage("Usuário ou senha incorretos");
       }
     } catch (error) {
-      console.error("Erro na requisição:", error);
-      setMessage("Ocorreu um erro ao fazer login");
+      toast.error('Ocorreu um erro ao fazer login!', {
+        position: "bottom-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+        });
+      // console.error("Erro na requisição:", error);
+      // setMessage("Ocorreu um erro ao fazer login");
     }
   };
+
+  // USEEFFECT
+  useEffect(() => {
+    // Verificar se há informações de login no localStorage e preencher o campo de email
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+  }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[url('/img/sean-pollock-PhYq704ffdA-unsplash.jpg')] bg-cover bg-center">

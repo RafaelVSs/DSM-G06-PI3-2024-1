@@ -6,12 +6,14 @@ import {
   SelectValue,
 } from "../ui/select";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { IoTimeOutline } from "react-icons/io5";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { ThreeCircles } from "react-loader-spinner";
+import React, { useState, useEffect } from "react";
+import { IoTimeOutline } from "react-icons/io5";
+import { toast, Bounce } from "react-toastify";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import React, { useState, useEffect } from "react";
 import Modal from "./index";
 import axios from "axios";
 
@@ -57,17 +59,19 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
   ticketId,
 }) => {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
-  const [isLoading, setIsLoading] = useState(false);
-  const [salas, setSalas] = useState<Sala[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [analistas, setAnalistas] = useState<Analista[]>([]);
+  const [salas, setSalas] = useState<Sala[]>([]);
+
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const { register, handleSubmit, setValue, reset, watch } =
     useForm<FormData>();
 
   useEffect(() => {
     if (isOpen) {
-      setIsLoading(true); // Start loading
+      setIsLoading(true);
 
       Promise.all([
         fetch("http://localhost:8080/sala").then((response) => response.json()),
@@ -103,19 +107,41 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
                   setValue("analista", analista.nome);
                 }
 
-                setIsLoading(false); // End loading after fetching ticket data
+                setIsLoading(false);
               })
               .catch((error) => {
+                toast.error("Erro ao buscar Ticket!", {
+                  position: "bottom-center",
+                  autoClose: 10000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored",
+                  transition: Bounce,
+                });
                 console.error("Error fetching ticket data:", error);
-                setIsLoading(false); // End loading even if there's an error
+                setIsLoading(false);
               });
           } else {
-            setIsLoading(false); // End loading if no ticketId
+            setIsLoading(false);
           }
         })
         .catch((error) => {
+          toast.error("Erro ao buscar Ticket!", {
+            position: "bottom-center",
+            autoClose: 10000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
           console.error("Error fetching data:", error);
-          setIsLoading(false); // End loading if there's an error
+          setIsLoading(false);
         });
     }
   }, [isOpen, ticketId, setValue]);
@@ -142,16 +168,52 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
       data.analista = "";
     }
 
-    console.log("Form data to be submitted:", data);
+    // console.log("Formulario a ser enviado:", data);
 
     try {
-      const response = await axios.put(`http://localhost:8080/ticket/${ticketId}`, data);
-      console.log("Form data updated successfully:", response.data);
+      const response = await axios.put(
+        `http://localhost:8080/ticket/${ticketId}`,
+        data
+      );
+      toast.success("Ticket atualizado com sucesso!", {
+        position: "bottom-center",
+        autoClose: 10000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      // console.log("requisição put feita com sucesso!:", response.data);
       onClose();
     } catch (error) {
       if (axios.isAxiosError(error)) {
+        toast.error("Erro ao atualizar Ticket!", {
+          position: "bottom-center",
+          autoClose: 10000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
         console.error("Axios error updating form data:", error.response?.data);
       } else {
+        toast.error("Erro ao atualizar Ticket!", {
+          position: "bottom-center",
+          autoClose: 10000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
         console.error("Unexpected error updating form data:", error);
       }
     }
@@ -205,7 +267,17 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
         body={
           isLoading ? (
             <div className="flex justify-center items-center h-full">
-              <p>Loading...</p>
+              <ThreeCircles
+                visible={true}
+                height="100"
+                width="100"
+                outerCircleColor="#3e8721"
+                innerCircleColor="#11507a"
+                middleCircleColor="#3e8721"
+                ariaLabel="three-circles-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+              />
             </div>
           ) : (
             <form onSubmit={handleSubmit(onSubmit)}>
