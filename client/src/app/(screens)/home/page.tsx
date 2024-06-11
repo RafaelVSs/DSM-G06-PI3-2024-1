@@ -83,7 +83,6 @@ export default function Home() {
         const analista = analistas.find((a: any) => a.nome === nomeAnalista);
 
         if (analista) {
-          // Adiciona log para verificar o ID do analista encontrado
           console.log(
             `Analista encontrado: ${analista.nome}, ID: ${analista._id}`
           );
@@ -93,10 +92,8 @@ export default function Home() {
           );
           const ticketsData = await responseTickets.json();
 
-          // Adiciona log para verificar os tickets retornados
-          console.log("Tickets retornados:", ticketsData);
 
-          // Filtra novamente no frontend para garantir que apenas os tickets do analista logado sejam exibidos
+          // Filtra novamente os tickets do analista logado
           const filteredTickets = ticketsData.filter(
             (ticket: Ticket) => ticket.analista === analista._id
           );
