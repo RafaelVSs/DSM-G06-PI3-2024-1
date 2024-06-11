@@ -83,16 +83,31 @@ export default function Home() {
         const analista = analistas.find((a: any) => a.nome === nomeAnalista);
 
         if (analista) {
+          // Adiciona log para verificar o ID do analista encontrado
+          console.log(
+            `Analista encontrado: ${analista.nome}, ID: ${analista._id}`
+          );
+
           const responseTickets = await fetch(
             `http://localhost:8080/ticket?analista=${analista._id}`
           );
           const ticketsData = await responseTickets.json();
 
+          // Adiciona log para verificar os tickets retornados
+          console.log("Tickets retornados:", ticketsData);
+
+          // Filtra novamente no frontend para garantir que apenas os tickets do analista logado sejam exibidos
+          const filteredTickets = ticketsData.filter(
+            (ticket: Ticket) => ticket.analista === analista._id
+          );
+
           const salaIds = Array.from(
-            new Set(ticketsData.map((ticket: Ticket) => ticket.nomeSala))
+            new Set(filteredTickets.map((ticket: Ticket) => ticket.nomeSala))
           );
           const categoriaIds = Array.from(
-            new Set(ticketsData.map((ticket: Ticket) => ticket.tipoProblema))
+            new Set(
+              filteredTickets.map((ticket: Ticket) => ticket.tipoProblema)
+            )
           );
 
           const responseSalas = await fetch("http://localhost:8080/sala");
@@ -113,8 +128,12 @@ export default function Home() {
 
           setSalas(salasMap);
           setCategorias(categoriasMap);
-          setTickets(ticketsData);
+          setTickets(filteredTickets);
+        } else {
+          console.error("Analista não encontrado.");
         }
+      } else {
+        console.error("Nome do analista não encontrado no localStorage.");
       }
     } catch (error) {
       toast.error("Erro ao buscar tickets do usuário!", {
@@ -151,7 +170,6 @@ export default function Home() {
       fetchTickets();
     }
   }, [isModalOpen, isEditModalOpen]);
-
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-10 bg-[#4677da] bg-cover bg-center">
       <Header />
@@ -177,7 +195,7 @@ export default function Home() {
                 <TableCell
                   colSpan={8}
                   className="justify-center items-center h-[200px]"
-                  >
+                >
                   <div className="flex justify-center m-3">
                     <ThreeCircles
                       visible={true}
