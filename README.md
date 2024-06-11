@@ -70,16 +70,16 @@ npm run dev
 
 ## Screenshots 📸
 * **Tela de login**
-![image](https://github.com/FatecFranca/DSM-G06-PI3-2024-1/assets/111711287/24175202-a2de-44e2-9fb5-84e345389a03)
+![image](https://github.com/RafaelVSs/DSM-G06-PI3-2024-1/blob/main/docs/telaLogin.png)
 
 * **Tela de tickets**
-![image](https://github.com/FatecFranca/DSM-G06-PI3-2024-1/assets/111711287/d43d000a-e5d9-471d-b666-62e331bf62bf)
+![image](https://github.com/RafaelVSs/DSM-G06-PI3-2024-1/blob/main/docs/telaTickets.png)
 
 * **Tela de abertura de ticket**
-![image](https://github.com/FatecFranca/DSM-G06-PI3-2024-1/assets/111711287/b7961278-9c7c-43c6-b285-04da96bc4cbf)
+![image](https://github.com/RafaelVSs/DSM-G06-PI3-2024-1/blob/main/docs/telaAberturaTicket.png)
 
 * **Tela de edição de ticket**
-![image](https://github.com/FatecFranca/DSM-G06-PI3-2024-1/assets/111711287/e1c44a0b-feeb-4b91-a775-5c8c3ad1c90b)
+![image](https://github.com/RafaelVSs/DSM-G06-PI3-2024-1/blob/main/docs/telaEditarTicket.png)
 
 
 
