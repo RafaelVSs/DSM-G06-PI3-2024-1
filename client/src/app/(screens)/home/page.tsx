@@ -77,7 +77,7 @@ export default function Home() {
       const nomeAnalista = localStorage.getItem("nomeAnalista");
 
       if (nomeAnalista) {
-        const responseAnalistas = await fetch("http://localhost:8080/analista");
+        const responseAnalistas = await fetch("https://dsm-g06-pi3-2024-1.onrender.com/analista");
         const analistas = await responseAnalistas.json();
 
         const analista = analistas.find((a: any) => a.nome === nomeAnalista);
@@ -88,7 +88,7 @@ export default function Home() {
           );
 
           const responseTickets = await fetch(
-            `http://localhost:8080/ticket?analista=${analista._id}`
+            `https://dsm-g06-pi3-2024-1.onrender.com/ticket?analista=${analista._id}`
           );
           const ticketsData = await responseTickets.json();
 
@@ -107,7 +107,7 @@ export default function Home() {
             )
           );
 
-          const responseSalas = await fetch("http://localhost:8080/sala");
+          const responseSalas = await fetch("https://dsm-g06-pi3-2024-1.onrender.com/sala");
           const allSalas: Sala[] = await responseSalas.json();
           const salasMap = allSalas.reduce((acc, sala) => {
             acc[sala._id] = sala;
@@ -115,7 +115,7 @@ export default function Home() {
           }, {} as { [key: string]: Sala });
 
           const responseCategorias = await fetch(
-            "http://localhost:8080/categoria"
+            "https://dsm-g06-pi3-2024-1.onrender.com/categoria"
           );
           const allCategorias: Categoria[] = await responseCategorias.json();
           const categoriasMap = allCategorias.reduce((acc, categoria) => {

@@ -88,7 +88,7 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
     }
 
     try {
-      const response = await axios.post("http://localhost:8080/ticket", data);
+      const response = await axios.post("https://dsm-g06-pi3-2024-1.onrender.com/ticket", data);
       console.log("Form data submitted successfully:", response.data);
 
       // Após enviar o ticket, restaura o nome do analista no formulário
@@ -178,17 +178,17 @@ const AddTicketModal: React.FC<AddTicketModalProps> = ({ isOpen, onClose }) => {
   // USEEFFECT
   useEffect(() => {
     if (isOpen) {
-      fetch("http://localhost:8080/sala")
+      fetch("https://dsm-g06-pi3-2024-1.onrender.com/sala")
         .then((response) => response.json())
         .then((data: Sala[]) => setSalas(data))
         .catch((error) => console.error("Error fetching salas:", error));
 
-      fetch("http://localhost:8080/categoria")
+      fetch("https://dsm-g06-pi3-2024-1.onrender.com/categoria")
         .then((response) => response.json())
         .then((data: Categoria[]) => setCategorias(data))
         .catch((error) => console.error("Error fetching categorias:", error));
 
-      fetch("http://localhost:8080/analista")
+      fetch("https://dsm-g06-pi3-2024-1.onrender.com/analista")
         .then((response) => response.json())
         .then((data: any[]) => setAnalistas(data))
         .catch((error) => console.error("Error fetching analistas:", error));

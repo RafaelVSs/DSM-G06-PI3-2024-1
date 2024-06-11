@@ -26,7 +26,7 @@ export default function App() {
   //REQUISIÇÃO GET
   const handleLogin = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/analista/`);
+      const response = await axios.get(`https://dsm-g06-pi3-2024-1.onrender.com/analista/`);
 
       const analistas: Analista[] = response.data;
 

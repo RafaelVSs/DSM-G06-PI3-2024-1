@@ -74,11 +74,11 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
       setIsLoading(true);
 
       Promise.all([
-        fetch("http://localhost:8080/sala").then((response) => response.json()),
-        fetch("http://localhost:8080/categoria").then((response) =>
+        fetch("https://dsm-g06-pi3-2024-1.onrender.com/sala").then((response) => response.json()),
+        fetch("https://dsm-g06-pi3-2024-1.onrender.com/categoria").then((response) =>
           response.json()
         ),
-        fetch("http://localhost:8080/analista").then((response) =>
+        fetch("https://dsm-g06-pi3-2024-1.onrender.com/analista").then((response) =>
           response.json()
         ),
       ])
@@ -90,7 +90,7 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
 
           if (ticketId) {
             axios
-              .get(`http://localhost:8080/ticket/${ticketId}`)
+              .get(`https://dsm-g06-pi3-2024-1.onrender.com/ticket/${ticketId}`)
               .then((response) => {
                 const ticketData = response.data;
                 setValue("solicitante", ticketData.solicitante);
@@ -172,7 +172,7 @@ const EditTicketModal: React.FC<EditTicketModalProps> = ({
 
     try {
       const response = await axios.put(
-        `http://localhost:8080/ticket/${ticketId}`,
+        `https://dsm-g06-pi3-2024-1.onrender.com/ticket/${ticketId}`,
         data
       );
       toast.success("Ticket atualizado com sucesso!", {
