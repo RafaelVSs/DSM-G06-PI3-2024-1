@@ -33,7 +33,7 @@ A documentação completa da API REST utilizada neste projeto, incluindo exemplo
 ```
 Bash
 
-git clone https://github.com/FatecFranca/DSM-G06-PI3-2024-1.git
+git clone https://github.com/RafaelVSs/DSM-G06-PI3-2024-1.git
 ```
 
 **Instalar as Dependências (Frontend e Backend):**
